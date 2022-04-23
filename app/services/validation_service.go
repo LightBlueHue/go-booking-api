@@ -2,25 +2,35 @@ package services
 
 import (
 	"go-booking-api/app/models/requests"
+	"regexp"
 
 	"github.com/revel/revel"
 )
 
-func ValidateLoginRequest(c *revel.Controller, l *requests.LoginRequest) {
-
-	c.Validation.Required(l.Email)
-	c.Validation.Email(l.Email)
-	c.Validation.MinSize(l.Password, 4).Message("Password must more than 4 characters long")
+type IValidationService interface {
+	ValidateLoginRequest(c *revel.Controller, l *requests.LoginRequest)
+	ValidateRegisterRequest(c *revel.Controller, l *requests.RegisterRequest)
 }
 
-func ValidateRegisterRequest(c *revel.Controller, l *requests.RegisterRequest) {
+type ValidationService struct {
+}
 
-	c.Validation.Required(l.Email)
+func GetValidationService() IValidationService {
+
+	return &ValidationService{}
+}
+
+func (s *ValidationService) ValidateLoginRequest(c *revel.Controller, l *requests.LoginRequest) {
+
 	c.Validation.Email(l.Email)
-	c.Validation.Required(l.Username)
-	c.Validation.Required(l.Password)
-	c.Validation.Required(l.ConfirmPassword)
-	c.Validation.MinSize(l.Password, 4).Message("Password must more than 4 characters long")
+	c.Validation.Match(l.Password, regexp.MustCompile("^\\w{4,20}$")).Message("Password must be 4 to 20 characters long")
+}
+
+func (s *ValidationService) ValidateRegisterRequest(c *revel.Controller, l *requests.RegisterRequest) {
+
+	c.Validation.Match(l.FirstName, regexp.MustCompile("^\\S+$")).Message("First name invalid")
+	c.Validation.Match(l.LastName, regexp.MustCompile("^\\S+$")).Message("Last name invalid")
+	c.Validation.Email(l.Email)
+	c.Validation.Match(l.Password, regexp.MustCompile("^\\w{4,20}$")).Message("Password must be 4 to 20 characters long")
 	c.Validation.Required(l.Password == l.ConfirmPassword).Message("Passwords do not match")
-	c.Validation.MinSize(l.ConfirmPassword, 4).Message("Password must more than 4 characters long")
 }

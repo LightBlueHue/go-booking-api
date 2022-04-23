@@ -24,7 +24,7 @@ type JwtService struct {
 	issure    string
 }
 
-func JWTAuthService() IJWTService {
+func GetJWTService() IJWTService {
 
 	return &JwtService{
 		secretKey: getSecretKey(),

@@ -48,3 +48,14 @@ The directory structure of a generated Revel application:
 [jwt](https://medium.com/wesionary-team/jwt-authentication-in-golang-with-gin-63dbc0816d55)
 https://stackoverflow.com/questions/44589854/is-it-possible-to-debug-go-revel-framework-from-visual-studio-code
 https://medium.com/learn-go/go-path-explained-cab31a0d90b9
+
+
+#### Docker
+`docker run --name postgres -p 5432:5432 -e POSTGRES_PASSWORD=postgres -d postgres`
+
+`docker run --name pgAdmin -p 4000:80 -e PGADMIN_DEFAULT_EMAIL="postgres@postgres.com" -e PGADMIN_DEFAULT_PASSWORD="postgres" dpage/pgadmin4`
+
+
+PgAdmin should be available on http://localhost:4000/
+
+To connect pgAdmin to your postgress server, run the following in cmd to find your container ip: docker network inspect bridge or type host.docker.internal as host

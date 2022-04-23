@@ -1,9 +1,10 @@
 package app
 
 import (
-	"github.com/revel/revel"
-	_ "github.com/revel/modules"
+	"go-booking-api/app/services"
 
+	_ "github.com/revel/modules"
+	"github.com/revel/revel"
 )
 
 var (
@@ -36,7 +37,7 @@ func init() {
 	// revel.DevMode and revel.RunMode only work inside of OnAppStart. See Example Startup Script
 	// ( order dependent )
 	// revel.OnAppStart(ExampleStartupScript)
-	// revel.OnAppStart(InitDB)
+	revel.OnAppStart(InitDB)
 	// revel.OnAppStart(FillCache)
 }
 
@@ -59,3 +60,7 @@ var HeaderFilter = func(c *revel.Controller, fc []revel.Filter) {
 //		// Dev mode
 //	}
 //}
+
+func InitDB() {
+	services.GetDBService().InitDB()	
+}

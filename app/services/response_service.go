@@ -7,7 +7,20 @@ import (
 	"github.com/revel/revel"
 )
 
-func CreateErrorResponse(code int, message string, validationErrors []*revel.ValidationError) *responses.ErrorResponse {
+type IResponseService interface {
+	CreateErrorResponse(code int, message string, validationErrors []*revel.ValidationError) *responses.ErrorResponse
+	CreateOperationResponse(context string, value interface{}) *responses.OperationResponse
+}
+
+type ResponseService struct {
+}
+
+func GetResponseService() IResponseService {
+
+	return &ResponseService{}
+}
+
+func (s *ResponseService) CreateErrorResponse(code int, message string, validationErrors []*revel.ValidationError) *responses.ErrorResponse {
 
 	response := &responses.ErrorResponse{}
 	details := []responses.ErrorDetail{}
@@ -18,7 +31,7 @@ func CreateErrorResponse(code int, message string, validationErrors []*revel.Val
 	return response
 }
 
-func CreateOperationResponse(context string, value interface{}) *responses.OperationResponse {
+func (s *ResponseService) CreateOperationResponse(context string, value interface{}) *responses.OperationResponse {
 
 	response := &responses.OperationResponse{Context: context, Value: value}
 	return response

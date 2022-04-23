@@ -1,8 +1,13 @@
 package models
 
+import "gorm.io/gorm"
+
 type User struct {
-	UserName  string
-	FirstName string
-	LastName  string
-	Email     string
+	gorm.Model
+	FirstName    string
+	LastName     string
+	Email        string
+	CredentialID uint
+	Credential   Credentials
+	Booking      []Booking
 }

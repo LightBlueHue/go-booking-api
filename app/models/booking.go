@@ -1,6 +1,10 @@
 package models
 
+import "gorm.io/gorm"
+
 type Booking struct {
-	*User
+	gorm.Model
+	UserID  uint
+	User    User
 	Tickets uint
 }
