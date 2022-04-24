@@ -7,7 +7,7 @@ import (
 type IUserService interface {
 	EmailExists(email string) bool
 	Save(user *models.User) error
-	Get(email string, hashedPwd string) (*models.User, error)
+	Get(email string) (*models.User, error)
 	GetPassword(email string) (string, error)
 }
 
@@ -45,11 +45,11 @@ func (service *UserService) Save(user *models.User) error {
 	return result.Error
 }
 
-func (service *UserService) Get(email string, hashedPwd string) (*models.User, error) {
+func (service *UserService) Get(email string) (*models.User, error) {
 
 	db := GetDBService().GetDB()
 
 	var user models.User
-	result := db.Where("email = ? AND password =?", email, hashedPwd).First(&user)
+	result := db.Where("email = ?", email).First(&user)
 	return &user, result.Error
 }

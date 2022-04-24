@@ -10,6 +10,7 @@ import (
 type IValidationService interface {
 	ValidateLoginRequest(c *revel.Controller, l *requests.LoginRequest)
 	ValidateRegisterRequest(c *revel.Controller, l *requests.RegisterRequest)
+	ValidateBookingRequest(c *revel.Controller, count uint) 
 }
 
 type ValidationService struct {
@@ -33,4 +34,9 @@ func (s *ValidationService) ValidateRegisterRequest(c *revel.Controller, l *requ
 	c.Validation.Email(l.Email)
 	c.Validation.Match(l.Password, regexp.MustCompile("^\\w{4,20}$")).Message("Password must be 4 to 20 characters long")
 	c.Validation.Required(l.Password == l.ConfirmPassword).Message("Passwords do not match")
+}
+
+func (s *ValidationService) ValidateBookingRequest(c *revel.Controller, count uint) {
+
+	c.Validation.Min(int(count), 1).Message("Booking must be a positive number, 1 or more")
 }

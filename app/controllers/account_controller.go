@@ -16,7 +16,7 @@ type AccountController struct {
 
 func (c *AccountController) Login() revel.Result {
 
-	_, hs, jwts, rs, us, vs := GetServices()
+	_, hs, jwts, rs, us, vs, _ := GetServices()
 	var model requests.LoginRequest
 	c.Params.BindJSON(&model)
 	vs.ValidateLoginRequest(c.Controller, &model)
@@ -53,7 +53,7 @@ func (c *AccountController) Login() revel.Result {
 
 func (c *AccountController) Register() revel.Result {
 
-	_, hs, _, rs, us, vs := GetServices()
+	_, hs, _, rs, us, vs, _ := GetServices()
 	var model requests.RegisterRequest
 	c.Params.BindJSON(&model)
 	vs.ValidateRegisterRequest(c.Controller, &model)
@@ -89,7 +89,7 @@ func (c *AccountController) Register() revel.Result {
 	if err = us.Save(user); err != nil {
 
 		c.Response.Status = http.StatusInternalServerError
-		c.Validation.Errors = append(c.Validation.Errors, &revel.ValidationError{Message: "sve", Key: "account"})
+		c.Validation.Errors = append(c.Validation.Errors, &revel.ValidationError{Message: "save", Key: "account"})
 		resp := rs.CreateErrorResponse(c.Response.Status, "Please try again", c.Validation.Errors)
 		return c.RenderJSON(resp)
 	}
@@ -98,10 +98,17 @@ func (c *AccountController) Register() revel.Result {
 	return c.Result
 }
 
-func IsLoggedIn(c revel.Controller) revel.Result {
+func IsLoggedIn(c *revel.Controller) revel.Result {
 
-	_, _, jwts, rs, _, _ := GetServices()
+	_, _, jwts, rs, _, _, _ := GetServices()
 	auth := c.Request.Header.Get("Authorization")
+	if strings.TrimSpace(auth) == "" {
+
+		c.Response.Status = http.StatusUnauthorized
+		c.Validation.Errors = append(c.Validation.Errors, &revel.ValidationError{Message: "log in", Key: "account"})
+		resp := rs.CreateErrorResponse(c.Response.Status, "Please log in", c.Validation.Errors)
+		return c.RenderJSON(resp)
+	}
 	token := strings.Split(auth, " ")[1]
 	jwtToken, err := jwts.ValidateToken(token)
 	if err != nil || !jwtToken.Valid {
@@ -114,7 +121,7 @@ func IsLoggedIn(c revel.Controller) revel.Result {
 	return nil
 }
 
-func GetServices() (services.IDBService, services.IHashService, services.IJWTService, services.IResponseService, services.IUserService, services.IValidationService) {
+func GetServices() (services.IDBService, services.IHashService, services.IJWTService, services.IResponseService, services.IUserService, services.IValidationService, services.IBookingService) {
 
-	return &services.DBService{}, &services.HashService{}, &services.JwtService{}, &services.ResponseService{}, &services.UserService{}, &services.ValidationService{}
+	return services.GetDBService(), services.GetHashService(), services.GetJWTService(), services.GetResponseService(), services.GetUserService(), services.GetValidationService(), services.GetBookingService()
 }

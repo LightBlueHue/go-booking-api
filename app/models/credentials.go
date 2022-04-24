@@ -2,5 +2,5 @@ package models
 
 type Credentials struct {
 	ID       uint
-	Password string `gorm:"uniqueIndex;size:20"`
+	Password string `gorm:"uniqueIndex;size:256"`
 }
