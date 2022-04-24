@@ -28,17 +28,7 @@ func (c *AccountController) Login() revel.Result {
 		return c.RenderJSON(resp)
 	}
 
-	var hashedPwd string
-	var err error
-	if hashedPwd, err = hs.HashAndSalt(model.Password); err != nil {
-
-		c.Response.Status = http.StatusBadRequest
-		c.Validation.Errors = append(c.Validation.Errors, &revel.ValidationError{Message: "hash", Key: "account"})
-		resp := rs.CreateErrorResponse(c.Response.Status, "Login validation error", c.Validation.Errors)
-		return c.RenderJSON(resp)
-	}
-
-	emailAndPwdExists, err := us.EmailAndPwdExists(model.Email, hashedPwd)
+	hashedPwd, err := us.GetPassword(model.Email)
 
 	if err != nil {
 
@@ -48,7 +38,7 @@ func (c *AccountController) Login() revel.Result {
 		return c.RenderJSON(resp)
 	}
 
-	if !emailAndPwdExists {
+	if pwdEqual := hs.ComparePasswords(hashedPwd, model.Password); !pwdEqual {
 
 		c.Response.Status = http.StatusBadRequest
 		c.Validation.Errors = append(c.Validation.Errors, &revel.ValidationError{Message: "unknown account", Key: "account"})
@@ -63,7 +53,7 @@ func (c *AccountController) Login() revel.Result {
 
 func (c *AccountController) Register() revel.Result {
 
-	_, _, _, rs, us, vs := GetServices()
+	_, hs, _, rs, us, vs := GetServices()
 	var model requests.RegisterRequest
 	c.Params.BindJSON(&model)
 	vs.ValidateRegisterRequest(c.Controller, &model)
@@ -82,14 +72,26 @@ func (c *AccountController) Register() revel.Result {
 		return c.RenderJSON(resp)
 	}
 
-	user := &models.User{FirstName: model.FirstName, LastName: model.LastName, Email: model.Email,
-		Credential: models.Credentials{Password: model.Password}}
-
-	// save in db
-	if err := us.Save(user); err != nil {
+	var err error
+	var hshPwd string
+	if hshPwd, err = hs.HashAndSalt(model.Password); err != nil {
 
 		c.Response.Status = http.StatusInternalServerError
-		return c.Result
+		c.Validation.Errors = append(c.Validation.Errors, &revel.ValidationError{Message: "h&s", Key: "account"})
+		resp := rs.CreateErrorResponse(c.Response.Status, "Please try again", c.Validation.Errors)
+		return c.RenderJSON(resp)
+	}
+
+	user := &models.User{FirstName: model.FirstName, LastName: model.LastName, Email: model.Email,
+		Credential: models.Credentials{Password: hshPwd}}
+
+	// save in db
+	if err = us.Save(user); err != nil {
+
+		c.Response.Status = http.StatusInternalServerError
+		c.Validation.Errors = append(c.Validation.Errors, &revel.ValidationError{Message: "sve", Key: "account"})
+		resp := rs.CreateErrorResponse(c.Response.Status, "Please try again", c.Validation.Errors)
+		return c.RenderJSON(resp)
 	}
 
 	c.Response.Status = http.StatusCreated

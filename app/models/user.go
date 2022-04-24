@@ -6,7 +6,7 @@ type User struct {
 	gorm.Model
 	FirstName    string
 	LastName     string
-	Email        string
+	Email        string `gorm:"uniqueIndex;size:20"`
 	CredentialID uint
 	Credential   Credentials
 	Booking      []Booking
