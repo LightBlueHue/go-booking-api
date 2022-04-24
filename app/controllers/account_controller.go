@@ -16,6 +16,8 @@ type AccountController struct {
 var us = services.GetUserService()
 var vs = services.GetValidationService()
 var rs = services.GetResponseService()
+var jwts = services.GetJWTService()
+var hs = services.GetHashService()
 
 func (c AccountController) Login() revel.Result {
 
@@ -24,17 +26,41 @@ func (c AccountController) Login() revel.Result {
 	vs.ValidateLoginRequest(c.Controller, &model)
 
 	if c.Validation.HasErrors() {
+
 		c.Response.Status = http.StatusBadRequest
 		resp := rs.CreateErrorResponse(c.Response.Status, "Login validation error", c.Validation.Errors)
 		return c.RenderJSON(resp)
 	}
 
-	// go to db to check username and pwd
-	// remember to hash pwd
-	// if exists
+	var hashedPwd string
+	var err error
+	if hashedPwd, err = hs.HashAndSalt(model.Password); err != nil {
 
-	jwtService := &services.JwtService{}
-	token := jwtService.GenerateToken(model.Email, true)
+		c.Response.Status = http.StatusBadRequest
+		c.Validation.Errors = append(c.Validation.Errors, &revel.ValidationError{Message: "hash", Key: "Account"})
+		resp := rs.CreateErrorResponse(c.Response.Status, "Login validation error", c.Validation.Errors)
+		return c.RenderJSON(resp)
+	}
+
+	emailAndPwdExists, err := us.EmailAndPwdExists(model.Email, hashedPwd)
+
+	if err != nil {
+
+		c.Response.Status = http.StatusInternalServerError
+		c.Validation.Errors = append(c.Validation.Errors, &revel.ValidationError{Message: "db", Key: "Account"})
+		resp := rs.CreateErrorResponse(c.Response.Status, "Sorry, We encountered an issue. Please try again", c.Validation.Errors)
+		return c.RenderJSON(resp)
+	}
+
+	if !emailAndPwdExists {
+
+		c.Response.Status = http.StatusBadRequest
+		c.Validation.Errors = append(c.Validation.Errors, &revel.ValidationError{Message: "unknown account", Key: "Account"})
+		resp := rs.CreateErrorResponse(c.Response.Status, "Sorry, we can't find an account with this email address. Please try again or create a new account.", c.Validation.Errors)
+		return c.RenderJSON(resp)
+	}
+
+	token := jwts.GenerateToken(model.Email, true)
 	resp := rs.CreateOperationResponse("jwt_token", token)
 	return c.RenderJSON(resp)
 }
@@ -46,6 +72,7 @@ func (c AccountController) Register() revel.Result {
 	vs.ValidateRegisterRequest(c.Controller, &model)
 
 	if c.Validation.HasErrors() {
+
 		c.Response.Status = http.StatusBadRequest
 		resp := rs.CreateErrorResponse(c.Response.Status, "Register validation error", c.Validation.Errors)
 		return c.RenderJSON(resp)
@@ -58,7 +85,7 @@ func (c AccountController) Register() revel.Result {
 		return c.RenderJSON(resp)
 	}
 
-	user := &models.User{ FirstName: model.FirstName, LastName: model.LastName, Email: model.Email,
+	user := &models.User{FirstName: model.FirstName, LastName: model.LastName, Email: model.Email,
 		Credential: models.Credentials{Password: model.Password}}
 
 	// save in db

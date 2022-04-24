@@ -4,7 +4,18 @@ import (
 	"golang.org/x/crypto/bcrypt"
 )
 
-func hashAndSalt(password string) (string, error) {
+type IHashService interface {
+	HashAndSalt(password string) (string, error)
+	ComparePasswords(hashedPwd string, password string) bool
+}
+type HashService struct{}
+
+func GetHashService() IHashService {
+
+	return &HashService{}
+}
+
+func (s *HashService) HashAndSalt(password string) (string, error) {
 
 	pwd := []byte(password)
 	// Use GenerateFromPassword to hash & salt pwd
@@ -14,6 +25,7 @@ func hashAndSalt(password string) (string, error) {
 	// than the MinCost (4)
 	hash, err := bcrypt.GenerateFromPassword(pwd, bcrypt.MinCost)
 	if err != nil {
+		
 		return "", err
 	}
 	// GenerateFromPassword returns a byte slice so we need to
@@ -21,13 +33,15 @@ func hashAndSalt(password string) (string, error) {
 	return string(hash), nil
 }
 
-func comparePasswords(hashedPwd string, plainPwd []byte) bool {
+func (s *HashService) ComparePasswords(hashedPwd string, password string) bool {
 
+	plainPwd := []byte(password)
 	// Since we'll be getting the hashed password from the DB it
 	// will be a string so we'll need to convert it to a byte slice
 	byteHash := []byte(hashedPwd)
-	err := bcrypt.CompareHashAndPassword(byteHash, plainPwd)
-	if err != nil {
+
+	if err := bcrypt.CompareHashAndPassword(byteHash, plainPwd); err != nil {
+
 		return false
 	}
 
