@@ -7,7 +7,7 @@ import (
 	"gorm.io/gorm"
 )
 
-type IDBService interface{
+type IDBService interface {
 	InitDB()
 	GetDB() *gorm.DB
 }
@@ -30,6 +30,7 @@ func (dbService *DBService) InitDB() {
 	}), &gorm.Config{})
 
 	if err != nil {
+
 		panic("failed to connect database")
 	}
 
@@ -37,6 +38,12 @@ func (dbService *DBService) InitDB() {
 	database.AutoMigrate(&models.Booking{})
 	database.AutoMigrate(&models.Credentials{})
 	database.AutoMigrate(&models.User{})
+
+	if tiExists := database.Migrator().HasTable(&models.TicketInventory{}); !tiExists {
+
+		database.AutoMigrate(&models.TicketInventory{})
+		database.Create(&models.TicketInventory{AvailableTickets: 50, TotalTickets: 50, Name: "JusticeLeagueLive", Description: "Justice League Live"})
+	}
 
 	db = database
 }

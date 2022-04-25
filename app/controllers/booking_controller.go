@@ -1,6 +1,7 @@
 package controllers
 
 import (
+	"go-booking-api/app/models"
 	"net/http"
 	"strconv"
 
@@ -11,9 +12,9 @@ type BookingController struct {
 	*revel.Controller
 }
 
-func (c BookingController) Book(count uint) revel.Result {
+func (c *BookingController) Book(count uint) revel.Result {
 
-	_, _, _, rs, _, vs, bs := GetServices()
+	_, _, _, rs, us, vs, bs := GetServices()
 
 	vs.ValidateBookingRequest(c.Controller, count)
 	if c.Validation.HasErrors() {
@@ -23,7 +24,18 @@ func (c BookingController) Book(count uint) revel.Result {
 		return c.RenderJSON(resp)
 	}
 
-	bs.Book(count)
+	var user *models.User
+	var err error
+	token, _ := GetBearerToken(c.Controller)
+	if user, err = us.GetByToken(token); err != nil {
+
+		c.Validation.Errors = append(c.Validation.Errors, &revel.ValidationError{Message: "token", Key: "booking"})
+		c.Response.Status = http.StatusInternalServerError
+		resp := rs.CreateErrorResponse(c.Response.Status, "Booking error", c.Validation.Errors)
+		return c.RenderJSON(resp)
+	}
+	
+	bs.Book(user,count)
 
 	return c.RenderText(strconv.FormatUint(uint64(count), 10))
 }

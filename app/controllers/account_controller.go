@@ -1,6 +1,7 @@
 package controllers
 
 import (
+	"fmt"
 	"go-booking-api/app/models"
 	"go-booking-api/app/models/requests"
 	"go-booking-api/app/services"
@@ -101,24 +102,42 @@ func (c *AccountController) Register() revel.Result {
 func IsLoggedIn(c *revel.Controller) revel.Result {
 
 	_, _, jwts, rs, _, _, _ := GetServices()
+	var token string
+	var err error
+
+	if token, err = GetBearerToken(c); err != nil {
+
+		c.Response.Status = http.StatusUnauthorized
+		c.Validation.Errors = append(c.Validation.Errors, &revel.ValidationError{Message: err.Error(), Key: "account"})
+		resp := rs.CreateErrorResponse(c.Response.Status, "Please log in", c.Validation.Errors)
+		return c.RenderJSON(resp)
+	}
+
+	if jwtToken, err := jwts.ValidateToken(token); err != nil || !jwtToken.Valid {
+
+		c.Response.Status = http.StatusUnauthorized
+		c.Validation.Errors = append(c.Validation.Errors, &revel.ValidationError{Message: "log in", Key: "account"})
+		resp := rs.CreateErrorResponse(c.Response.Status, "Please log in", c.Validation.Errors)
+		return c.RenderJSON(resp)
+	}
+
+	return nil
+}
+
+func GetBearerToken(c *revel.Controller) (string, error) {
+
 	auth := c.Request.Header.Get("Authorization")
 	if strings.TrimSpace(auth) == "" {
 
-		c.Response.Status = http.StatusUnauthorized
-		c.Validation.Errors = append(c.Validation.Errors, &revel.ValidationError{Message: "log in", Key: "account"})
-		resp := rs.CreateErrorResponse(c.Response.Status, "Please log in", c.Validation.Errors)
-		return c.RenderJSON(resp)
+		return "", fmt.Errorf("Authorization header empty")
 	}
-	token := strings.Split(auth, " ")[1]
-	jwtToken, err := jwts.ValidateToken(token)
-	if err != nil || !jwtToken.Valid {
 
-		c.Response.Status = http.StatusUnauthorized
-		c.Validation.Errors = append(c.Validation.Errors, &revel.ValidationError{Message: "log in", Key: "account"})
-		resp := rs.CreateErrorResponse(c.Response.Status, "Please log in", c.Validation.Errors)
-		return c.RenderJSON(resp)
+	var token string
+	if token = strings.Split(auth, " ")[1]; token == "" {
+		return "", fmt.Errorf("Authorization header Bearer empty")
 	}
-	return nil
+	
+	return token, nil
 }
 
 func GetServices() (services.IDBService, services.IHashService, services.IJWTService, services.IResponseService, services.IUserService, services.IValidationService, services.IBookingService) {
