@@ -15,7 +15,7 @@ type BookingController struct {
 
 func (c *BookingController) Book(count uint) revel.Result {
 
-	_, _, _, rs, us, vs, bs := GetServices()
+	_, _, _, rs, _, vs, bs := GetServices()
 
 	vs.ValidateBookingRequest(c.Controller, count)
 	if c.Validation.HasErrors() {
@@ -27,10 +27,9 @@ func (c *BookingController) Book(count uint) revel.Result {
 
 	var user *models.User
 	var err error
-	token, _ := GetBearerToken(c.Controller)
-	if user, err = us.GetByToken(token); err != nil {
+	if user, err = GetUser(c.Controller); err != nil {
 
-		c.Validation.Errors = append(c.Validation.Errors, &revel.ValidationError{Message: "token", Key: "booking"})
+		c.Validation.Errors = append(c.Validation.Errors, &revel.ValidationError{Message: "unable to authenticate user", Key: "booking"})
 		c.Response.Status = http.StatusInternalServerError
 		resp := rs.CreateErrorResponse(c.Response.Status, "Booking error", c.Validation.Errors)
 		return c.RenderJSON(resp)
@@ -51,6 +50,6 @@ func (c *BookingController) Book(count uint) revel.Result {
 }
 
 func init() {
-	
+
 	revel.InterceptFunc(IsLoggedIn, revel.BEFORE, &BookingController{})
 }

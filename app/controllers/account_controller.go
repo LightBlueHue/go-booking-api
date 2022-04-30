@@ -101,11 +101,11 @@ func (c *AccountController) Register() revel.Result {
 
 func IsLoggedIn(c *revel.Controller) revel.Result {
 
-	_, _, jwts, rs, _, _, _ := GetServices()
+	_, _, jwts, rs, us, _, _ := GetServices()
 	var token string
 	var err error
 
-	if token, err = GetBearerToken(c); err != nil {
+	if token, err = getBearerToken(c); err != nil {
 
 		c.Response.Status = http.StatusUnauthorized
 		c.Validation.Errors = append(c.Validation.Errors, &revel.ValidationError{Message: err.Error(), Key: "account"})
@@ -121,10 +121,19 @@ func IsLoggedIn(c *revel.Controller) revel.Result {
 		return c.RenderJSON(resp)
 	}
 
+	var user *models.User
+	if user, err = us.GetByToken(token); err != nil || user == nil {
+
+		c.Validation.Errors = append(c.Validation.Errors, &revel.ValidationError{Message: "log in", Key: "account"})
+		c.Response.Status = http.StatusInternalServerError
+		resp := rs.CreateErrorResponse(c.Response.Status, "Please log in", c.Validation.Errors)
+		return c.RenderJSON(resp)
+	}
+
 	return nil
 }
 
-func GetBearerToken(c *revel.Controller) (string, error) {
+func getBearerToken(c *revel.Controller) (string, error) {
 
 	auth := c.Request.Header.Get("Authorization")
 	if strings.TrimSpace(auth) == "" {
@@ -136,8 +145,38 @@ func GetBearerToken(c *revel.Controller) (string, error) {
 	if token = strings.Split(auth, " ")[1]; token == "" {
 		return "", fmt.Errorf("Authorization header Bearer empty")
 	}
-	
+
 	return token, nil
+}
+
+func GetUser(c *revel.Controller) (*models.User, error) {
+
+	_, _, jwts, _, us, _, _ := GetServices()
+	var token string
+	var err error
+
+	if token, err = getBearerToken(c); err != nil {
+
+		return nil, err
+	}
+
+	if jwtToken, err := jwts.ValidateToken(token); err != nil || !jwtToken.Valid {
+
+		return nil, err
+	}
+
+	var user *models.User
+	if user, err = us.GetByToken(token); err != nil || user == nil {
+
+		if err == nil {
+
+			return nil, fmt.Errorf("")
+		}
+
+		return nil, err
+	}
+
+	return user, nil
 }
 
 func GetServices() (services.IDBService, services.IHashService, services.IJWTService, services.IResponseService, services.IUserService, services.IValidationService, services.IBookingService) {
