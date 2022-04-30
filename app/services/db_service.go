@@ -24,6 +24,8 @@ func GetDBService() IDBService {
 
 func (dbService *DBService) InitDB() {
 
+	var dbResult *gorm.DB
+
 	database, err := gorm.Open(postgres.New(postgres.Config{
 		DSN:                  "user=postgres password=postgres dbname=go-booking-api port=5432 sslmode=disable TimeZone=Europe/London",
 		PreferSimpleProtocol: true, // disables implicit prepared statement usage
@@ -31,10 +33,21 @@ func (dbService *DBService) InitDB() {
 
 	if err != nil {
 
-		panic("failed to connect database")
-	}
+		database, err = gorm.Open(postgres.New(postgres.Config{
+			DSN:                  "user=postgres password=postgres port=5432 sslmode=disable TimeZone=Europe/London",
+			PreferSimpleProtocol: true, // disables implicit prepared statement usage
+		}), &gorm.Config{})
 
-	var dbResult *gorm.DB
+		if dbResult = database.Exec(`CREATE DATABASE "go-booking-api" WITH OWNER = postgres ENCODING = 'UTF8' LC_COLLATE = 'en_US.utf8' LC_CTYPE = 'en_US.utf8' TABLESPACE = pg_default CONNECTION LIMIT = -1;`); dbResult.Error != nil {
+
+			panic("failed to connect database")
+		}
+
+		database, err = gorm.Open(postgres.New(postgres.Config{
+			DSN:                  "user=postgres password=postgres dbname=go-booking-api port=5432 sslmode=disable TimeZone=Europe/London",
+			PreferSimpleProtocol: true, // disables implicit prepared statement usage
+		}), &gorm.Config{})
+	}
 
 	// Migrate the schema
 	if tiExists := database.Migrator().HasTable(&models.TicketInventory{}); !tiExists {
@@ -53,11 +66,6 @@ func (dbService *DBService) InitDB() {
 
 			panic("ipe")
 		}
-
-		// if dbResult = database.Exec("DROP FUNCTION book(INT,INT)"); dbResult.Error != nil {
-
-		// 	panic("dfb")
-		// }
 
 		if dbResult = database.Exec(`CREATE OR REPLACE FUNCTION book(ticketsToBuy INT, userId INT)
 		RETURNS SETOF BIGINT AS
