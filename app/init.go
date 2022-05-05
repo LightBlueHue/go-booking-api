@@ -5,6 +5,7 @@ import (
 
 	_ "github.com/revel/modules"
 	"github.com/revel/revel"
+	"gorm.io/gorm"
 )
 
 var (
@@ -62,5 +63,6 @@ var HeaderFilter = func(c *revel.Controller, fc []revel.Filter) {
 //}
 
 func InitDB() {
-	services.GetDBService().InitDB()	
+	var db *gorm.DB
+	services.GetDBService().InitDB(db)	
 }

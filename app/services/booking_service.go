@@ -7,6 +7,7 @@ import (
 
 type IBookingService interface {
 	Book(user *models.User, count uint) (uint, error)
+	GetBookings(user *models.User) (*[]models.Booking, error)
 }
 
 type BookingService struct {
@@ -30,4 +31,12 @@ func (s *BookingService) Book(user *models.User, count uint) (uint, error) {
 	}
 
 	return bookingId, result.Error
+}
+
+func (s *BookingService) GetBookings(user *models.User) (*[]models.Booking, error) {
+
+	db := GetDBService().GetDB()
+	var bookings *[]models.Booking
+	result := db.Where("user_id = ?", user.ID).Find(&bookings)
+	return bookings, result.Error
 }

@@ -8,7 +8,7 @@ import (
 )
 
 type IDBService interface {
-	InitDB()
+	InitDB(database *gorm.DB)
 	GetDB() *gorm.DB
 }
 
@@ -22,11 +22,12 @@ func GetDBService() IDBService {
 	return &DBService{}
 }
 
-func (dbService *DBService) InitDB() {
+func (dbService *DBService) InitDB(database *gorm.DB) {
 
 	var dbResult *gorm.DB
+	var err error
 
-	database, err := gorm.Open(postgres.New(postgres.Config{
+	database, err = gorm.Open(postgres.New(postgres.Config{
 		DSN:                  "user=postgres password=postgres dbname=go-booking-api port=5432 sslmode=disable TimeZone=Europe/London",
 		PreferSimpleProtocol: true, // disables implicit prepared statement usage
 	}), &gorm.Config{})
@@ -119,9 +120,5 @@ func (dbService *DBService) InitDB() {
 
 func (dbService *DBService) GetDB() *gorm.DB {
 
-	if db == nil {
-
-		dbService.InitDB()
-	}
 	return db
 }

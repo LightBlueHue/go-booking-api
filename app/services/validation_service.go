@@ -10,7 +10,7 @@ import (
 type IValidationService interface {
 	ValidateLoginRequest(c *revel.Controller, l *requests.LoginRequest)
 	ValidateRegisterRequest(c *revel.Controller, l *requests.RegisterRequest)
-	ValidateBookingRequest(c *revel.Controller, count uint) 
+	ValidateBookingRequest(c *revel.Controller, count uint)
 }
 
 type ValidationService struct {
@@ -37,6 +37,6 @@ func (s *ValidationService) ValidateRegisterRequest(c *revel.Controller, l *requ
 }
 
 func (s *ValidationService) ValidateBookingRequest(c *revel.Controller, count uint) {
-
-	c.Validation.Min(int(count), 1).Message("Booking must be a positive number, 1 or more")
+	min := int(count)
+	c.Validation.Min(min, 1).Message("Booking must be a positive number, 1 or more")
 }

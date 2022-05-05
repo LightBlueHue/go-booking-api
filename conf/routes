@@ -25,6 +25,7 @@ GET     /public/*filepath                       Static.Serve("public")
 # without having to add them to the routes table.
 # *       /:controller/:action                    :controller.:action
 
-POST                                        /accounts/login                                      AccountController.Login
-POST                                        /accounts/register                                   AccountController.Register
-POST                                        /bookings/:count                                     BookingController.Book
+POST     /accounts/login                                          AccountController.Login
+POST     /accounts/register                                       AccountController.Register
+POST     /bookings/:count                                         BookingController.Book
+GET      /bookings                                                BookingController.GetBookings
