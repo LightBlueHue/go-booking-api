@@ -133,22 +133,6 @@ func IsLoggedIn(c *revel.Controller) revel.Result {
 	return nil
 }
 
-func getBearerToken(c *revel.Controller) (string, error) {
-
-	auth := c.Request.Header.Get("Authorization")
-	if strings.TrimSpace(auth) == "" {
-
-		return "", fmt.Errorf("Authorization header empty")
-	}
-
-	var token string
-	if token = strings.Split(auth, " ")[1]; token == "" {
-		return "", fmt.Errorf("Authorization header Bearer empty")
-	}
-
-	return token, nil
-}
-
 func GetUser(c *revel.Controller) (*models.User, error) {
 
 	_, _, jwts, _, us, _, _ := GetServices()
@@ -182,4 +166,20 @@ func GetUser(c *revel.Controller) (*models.User, error) {
 func GetServices() (services.IDBService, services.IHashService, services.IJWTService, services.IResponseService, services.IUserService, services.IValidationService, services.IBookingService) {
 
 	return services.GetDBService(), services.GetHashService(), services.GetJWTService(), services.GetResponseService(), services.GetUserService(), services.GetValidationService(), services.GetBookingService()
+}
+
+func getBearerToken(c *revel.Controller) (string, error) {
+
+	auth := c.Request.Header.Get("Authorization")
+	if strings.TrimSpace(auth) == "" {
+
+		return "", fmt.Errorf("Authorization header empty")
+	}
+
+	var token string
+	if token = strings.Split(auth, " ")[1]; token == "" {
+		return "", fmt.Errorf("Authorization header Bearer empty")
+	}
+
+	return token, nil
 }

@@ -8,10 +8,16 @@ import (
 	"github.com/golang-jwt/jwt"
 )
 
+const (
+	EMAIL_CLAIM JwtClaimType = "email"
+)
+
+type JwtClaimType string
+
 type IJWTService interface {
 	GenerateToken(email string, isUser bool) string
 	ValidateToken(token string) (*jwt.Token, error)
-	GetClaim(token string, claim string) (string, error)
+	GetClaim(token string, claimType JwtClaimType) (string, error)
 }
 
 type authCustomClaims struct {
@@ -26,26 +32,12 @@ type JwtService struct {
 	issure    string
 }
 
-const (
-	EmailClaimType = "email"
-)
-
 func GetJWTService() IJWTService {
 
 	return &JwtService{
 		secretKey: getSecretKey(),
 		issure:    "go-booikng-api",
 	}
-}
-
-func getSecretKey() string {
-
-	secret := os.Getenv("SECRET")
-	if secret == "" {
-
-		secret = "secret"
-	}
-	return secret
 }
 
 func (service *JwtService) GenerateToken(email string, isUser bool) string {
@@ -82,7 +74,7 @@ func (service *JwtService) ValidateToken(encodedToken string) (*jwt.Token, error
 	})
 }
 
-func (service *JwtService) GetClaim(token string, claim string) (string, error) {
+func (service *JwtService) GetClaim(token string, claimType JwtClaimType) (string, error) {
 
 	jwtToken, err := service.ValidateToken(token)
 	if err != nil || !jwtToken.Valid {
@@ -92,8 +84,18 @@ func (service *JwtService) GetClaim(token string, claim string) (string, error) 
 
 	if claims, ok := jwtToken.Claims.(jwt.MapClaims); ok {
 
-		return fmt.Sprint(claims[claim]), nil
+		return fmt.Sprint(claims[string(claimType)]), nil
 	}
 
 	return "", fmt.Errorf("Unable to retrieve claim")
+}
+
+func getSecretKey() string {
+
+	secret := os.Getenv("SECRET")
+	if secret == "" {
+
+		secret = "secret"
+	}
+	return secret
 }

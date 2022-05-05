@@ -7,6 +7,42 @@ import (
 	"gorm.io/gorm"
 )
 
+const (
+	SQL_STATEMENT_CREATE_DB            = `CREATE DATABASE "go-booking-api" WITH OWNER = postgres ENCODING = 'UTF8' LC_COLLATE = 'en_US.utf8' LC_CTYPE = 'en_US.utf8' TABLESPACE = pg_default CONNECTION LIMIT = -1;`
+	SQL_STATEMENT_CREATE_BOOK_FUNCTION = `CREATE OR REPLACE FUNCTION book(ticketsToBuy INT, userId INT)
+	RETURNS SETOF BIGINT AS
+	$body$
+		DECLARE
+		remainingTickets INT;
+		timeNow timestamp with time zone;
+		
+		BEGIN
+		
+		lock table ticket_inventories IN ROW EXCLUSIVE MODE;
+		
+		remainingTickets:= (SELECT ticket_inventories.available_tickets FROM ticket_inventories WHERE ID = 1);
+		
+		IF remainingTickets > ticketsToBuy THEN
+			BEGIN
+			
+			timeNow := now();
+			
+			UPDATE ticket_inventories
+			SET available_tickets = ( remainingTickets - ticketsToBuy)
+			WHERE id = 1;
+			
+			RETURN QUERY INSERT INTO bookings (created_at, updated_at, user_id, tickets, ticket_inventory_id)
+			VALUES (timeNow, timeNow, userId, ticketsToBuy, 1) RETURNING id;
+			
+			END;
+		
+		END IF;
+		
+		END 
+	$body$
+	LANGUAGE plpgsql`
+)
+
 type IDBService interface {
 	InitDB(database *gorm.DB)
 	GetDB() *gorm.DB
@@ -39,7 +75,7 @@ func (dbService *DBService) InitDB(database *gorm.DB) {
 			PreferSimpleProtocol: true, // disables implicit prepared statement usage
 		}), &gorm.Config{})
 
-		if dbResult = database.Exec(`CREATE DATABASE "go-booking-api" WITH OWNER = postgres ENCODING = 'UTF8' LC_COLLATE = 'en_US.utf8' LC_CTYPE = 'en_US.utf8' TABLESPACE = pg_default CONNECTION LIMIT = -1;`); dbResult.Error != nil {
+		if dbResult = database.Exec(SQL_STATEMENT_CREATE_DB); dbResult.Error != nil {
 
 			panic("failed to connect database")
 		}
@@ -68,38 +104,7 @@ func (dbService *DBService) InitDB(database *gorm.DB) {
 			panic("ipe")
 		}
 
-		if dbResult = database.Exec(`CREATE OR REPLACE FUNCTION book(ticketsToBuy INT, userId INT)
-		RETURNS SETOF BIGINT AS
-		$body$
-			DECLARE
-			remainingTickets INT;
-			timeNow timestamp with time zone;
-			
-			BEGIN
-			
-			lock table ticket_inventories IN ROW EXCLUSIVE MODE;
-			
-			remainingTickets:= (SELECT ticket_inventories.available_tickets FROM ticket_inventories WHERE ID = 1);
-			
-			IF remainingTickets > ticketsToBuy THEN
-				BEGIN
-				
-				timeNow := now();
-				
-				UPDATE ticket_inventories
-				SET available_tickets = ( remainingTickets - ticketsToBuy)
-				WHERE id = 1;
-				
-				RETURN QUERY INSERT INTO bookings (created_at, updated_at, user_id, tickets, ticket_inventory_id)
-				VALUES (timeNow, timeNow, userId, ticketsToBuy, 1) RETURNING id;
-				
-				END;
-			
-			END IF;
-			
-			END 
-		$body$
-		LANGUAGE plpgsql`); dbResult.Error != nil {
+		if dbResult = database.Exec(SQL_STATEMENT_CREATE_BOOK_FUNCTION); dbResult.Error != nil {
 
 			panic("utcbf")
 		}
