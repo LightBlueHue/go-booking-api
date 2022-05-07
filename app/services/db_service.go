@@ -44,11 +44,6 @@ const (
 	LANGUAGE plpgsql`
 )
 
-type IDBService interface {
-	InitDB(database *gorm.DB, dbInfo DbInfo)
-	GetDB() *gorm.DB
-}
-
 type DBService struct {
 }
 

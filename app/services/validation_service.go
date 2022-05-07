@@ -7,12 +7,6 @@ import (
 	"github.com/revel/revel"
 )
 
-type IValidationService interface {
-	ValidateLoginRequest(c *revel.Controller, l *requests.LoginRequest)
-	ValidateRegisterRequest(c *revel.Controller, l *requests.RegisterRequest)
-	ValidateBookingRequest(c *revel.Controller, count uint)
-}
-
 type ValidationService struct {
 }
 

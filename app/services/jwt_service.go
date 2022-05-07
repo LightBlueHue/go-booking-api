@@ -14,12 +14,6 @@ const (
 
 type JwtClaimType string
 
-type IJWTService interface {
-	GenerateToken(email string, isUser bool) string
-	ValidateToken(token string) (*jwt.Token, error)
-	GetClaim(token string, claimType JwtClaimType) (string, error)
-}
-
 type authCustomClaims struct {
 	Name  string `json:"name"`
 	Email string `json:"email"`

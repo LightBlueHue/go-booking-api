@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"go-booking-api/app/models"
 	"go-booking-api/app/models/responses"
+	"go-booking-api/app/services"
 	"net/http"
 
 	"github.com/revel/revel"
@@ -11,17 +12,16 @@ import (
 
 type BookingController struct {
 	*revel.Controller
+	Service services.Service
 }
 
 func (c *BookingController) Book(count uint) revel.Result {
 
-	_, _, _, rs, _, vs, bs := GetServices()
-
-	vs.ValidateBookingRequest(c.Controller, count)
+	c.Service.ValidationService.ValidateBookingRequest(c.Controller, count)
 	if c.Validation.HasErrors() {
 
 		c.Response.Status = http.StatusBadRequest
-		resp := rs.CreateErrorResponse(c.Response.Status, "Booking error", c.Validation.Errors)
+		resp := c.Service.ResponseService.CreateErrorResponse(c.Response.Status, "Booking error", c.Validation.Errors)
 		return c.RenderJSON(resp)
 	}
 
@@ -31,15 +31,15 @@ func (c *BookingController) Book(count uint) revel.Result {
 
 		c.Validation.Errors = append(c.Validation.Errors, &revel.ValidationError{Message: "unable to authenticate user", Key: "booking"})
 		c.Response.Status = http.StatusInternalServerError
-		resp := rs.CreateErrorResponse(c.Response.Status, "Booking error", c.Validation.Errors)
+		resp := c.Service.ResponseService.CreateErrorResponse(c.Response.Status, "Booking error", c.Validation.Errors)
 		return c.RenderJSON(resp)
 	}
 
 	var bookingId uint
-	if bookingId, err = bs.Book(user, count); err != nil {
+	if bookingId, err = c.Service.BookingService.Book(user, count); err != nil {
 
 		c.Response.Status = http.StatusInternalServerError
-		resp := rs.CreateErrorResponse(c.Response.Status, "Booking error", c.Validation.Errors)
+		resp := c.Service.ResponseService.CreateErrorResponse(c.Response.Status, "Booking error", c.Validation.Errors)
 		return c.RenderJSON(resp)
 	}
 
@@ -51,8 +51,6 @@ func (c *BookingController) Book(count uint) revel.Result {
 
 func (c *BookingController) GetBookings() revel.Result {
 
-	_, _, _, rs, _, _, bs := GetServices()
-
 	var user *models.User
 	var bookings *[]models.Booking
 	var err error
@@ -61,15 +59,15 @@ func (c *BookingController) GetBookings() revel.Result {
 
 		c.Validation.Errors = append(c.Validation.Errors, &revel.ValidationError{Message: "unable to authenticate user", Key: "booking"})
 		c.Response.Status = http.StatusInternalServerError
-		resp := rs.CreateErrorResponse(c.Response.Status, "Booking error", c.Validation.Errors)
+		resp := c.Service.ResponseService.CreateErrorResponse(c.Response.Status, "Booking error", c.Validation.Errors)
 		return c.RenderJSON(resp)
 	}
 
-	if bookings, err = bs.GetBookings(user); err != nil {
+	if bookings, err = c.Service.BookingService.GetBookings(user); err != nil {
 
 		c.Validation.Errors = append(c.Validation.Errors, &revel.ValidationError{Message: "unable to to retrieve bookings", Key: "booking"})
 		c.Response.Status = http.StatusInternalServerError
-		resp := rs.CreateErrorResponse(c.Response.Status, "Booking retrieval error", c.Validation.Errors)
+		resp := c.Service.ResponseService.CreateErrorResponse(c.Response.Status, "Booking retrieval error", c.Validation.Errors)
 		return c.RenderJSON(resp)
 	}
 

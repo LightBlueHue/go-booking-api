@@ -10,14 +10,6 @@ const (
 	SQL_STATEMENT_GET_USER_BY_EMAIL = "email = ?"
 )
 
-type IUserService interface {
-	EmailExists(email string) bool
-	Save(user *models.User) error
-	GetByEmail(email string) (*models.User, error)
-	GetPassword(email string) (string, error)
-	GetByToken(token string) (*models.User, error)
-}
-
 type UserService struct {
 }
 

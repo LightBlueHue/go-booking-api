@@ -13,73 +13,72 @@ import (
 
 type AccountController struct {
 	*revel.Controller
+	Service services.Service
 }
 
 func (c *AccountController) Login() revel.Result {
 
-	_, hs, jwts, rs, us, vs, _ := GetServices()
 	var model requests.LoginRequest
 	c.Params.BindJSON(&model)
-	vs.ValidateLoginRequest(c.Controller, &model)
+	c.Service.ValidationService.ValidateLoginRequest(c.Controller, &model)
 
 	if c.Validation.HasErrors() {
 
 		c.Response.Status = http.StatusBadRequest
-		resp := rs.CreateErrorResponse(c.Response.Status, "Login validation error", c.Validation.Errors)
+		resp := c.Service.ResponseService.CreateErrorResponse(c.Response.Status, "Login validation error", c.Validation.Errors)
 		return c.RenderJSON(resp)
 	}
 
-	hashedPwd, err := us.GetPassword(model.Email)
+	hashedPwd, err := c.Service.UserService.GetPassword(model.Email)
 
 	if err != nil {
 
 		c.Response.Status = http.StatusInternalServerError
 		c.Validation.Errors = append(c.Validation.Errors, &revel.ValidationError{Message: "db", Key: "account"})
-		resp := rs.CreateErrorResponse(c.Response.Status, "Sorry, We encountered an issue. Please try again", c.Validation.Errors)
+		resp := c.Service.ResponseService.CreateErrorResponse(c.Response.Status, "Sorry, We encountered an issue. Please try again", c.Validation.Errors)
 		return c.RenderJSON(resp)
 	}
 
-	if pwdEqual := hs.ComparePasswords(hashedPwd, model.Password); !pwdEqual {
+	if pwdEqual := c.Service.HashService.ComparePasswords(hashedPwd, model.Password); !pwdEqual {
 
 		c.Response.Status = http.StatusBadRequest
 		c.Validation.Errors = append(c.Validation.Errors, &revel.ValidationError{Message: "unknown account", Key: "account"})
-		resp := rs.CreateErrorResponse(c.Response.Status, "Sorry, we can't find an account with this email address. Please try again or create a new account.", c.Validation.Errors)
+		resp := c.Service.ResponseService.CreateErrorResponse(c.Response.Status, "Sorry, we can't find an account with this email address. Please try again or create a new account.", c.Validation.Errors)
 		return c.RenderJSON(resp)
 	}
 
-	token := jwts.GenerateToken(model.Email, true)
-	resp := rs.CreateOperationResponse("jwt_token", token)
+	token := c.Service.JWTService.GenerateToken(model.Email, true)
+	resp := c.Service.ResponseService.CreateOperationResponse("jwt_token", token)
 	return c.RenderJSON(resp)
 }
 
 func (c *AccountController) Register() revel.Result {
 
-	_, hs, _, rs, us, vs, _ := GetServices()
 	var model requests.RegisterRequest
 	c.Params.BindJSON(&model)
-	vs.ValidateRegisterRequest(c.Controller, &model)
+	c.Service.ValidationService.ValidateRegisterRequest(c.Controller, &model)
 
 	if c.Validation.HasErrors() {
 
 		c.Response.Status = http.StatusBadRequest
-		resp := rs.CreateErrorResponse(c.Response.Status, "Register validation error", c.Validation.Errors)
+		resp := c.Service.ResponseService.CreateErrorResponse(c.Response.Status, "Register validation error", c.Validation.Errors)
 		return c.RenderJSON(resp)
 	}
 
-	if us.EmailExists(model.Email) {
+	if c.Service.UserService.EmailExists(model.Email) {
 
 		c.Response.Status = http.StatusBadRequest
-		resp := rs.CreateErrorResponse(c.Response.Status, "Email exists", c.Validation.Errors)
+		resp := c.Service.ResponseService.CreateErrorResponse(c.Response.Status, "Email exists", c.Validation.Errors)
 		return c.RenderJSON(resp)
 	}
 
 	var err error
 	var hshPwd string
-	if hshPwd, err = hs.HashAndSalt(model.Password); err != nil {
+	if hshPwd, err = c.Service.HashService.HashAndSalt(model.Password); err != nil {
 
 		c.Response.Status = http.StatusInternalServerError
 		c.Validation.Errors = append(c.Validation.Errors, &revel.ValidationError{Message: "h&s", Key: "account"})
-		resp := rs.CreateErrorResponse(c.Response.Status, "Please try again", c.Validation.Errors)
+		resp := c.Service.ResponseService.CreateErrorResponse(c.Response.Status, "Please try again", c.Validation.Errors)
 		return c.RenderJSON(resp)
 	}
 
@@ -87,11 +86,11 @@ func (c *AccountController) Register() revel.Result {
 		Credential: models.Credentials{Password: hshPwd}}
 
 	// save in db
-	if err = us.Save(user); err != nil {
+	if err = c.Service.UserService.Save(user); err != nil {
 
 		c.Response.Status = http.StatusInternalServerError
 		c.Validation.Errors = append(c.Validation.Errors, &revel.ValidationError{Message: "save", Key: "account"})
-		resp := rs.CreateErrorResponse(c.Response.Status, "Please try again", c.Validation.Errors)
+		resp := c.Service.ResponseService.CreateErrorResponse(c.Response.Status, "Please try again", c.Validation.Errors)
 		return c.RenderJSON(resp)
 	}
 
@@ -101,7 +100,9 @@ func (c *AccountController) Register() revel.Result {
 
 func IsLoggedIn(c *revel.Controller) revel.Result {
 
-	_, _, jwts, rs, us, _, _ := GetServices()
+	jwts := services.GetJWTService()
+	rs := services.GetResponseService()
+	us := services.GetUserService()
 	var token string
 	var err error
 
@@ -135,7 +136,8 @@ func IsLoggedIn(c *revel.Controller) revel.Result {
 
 func GetUser(c *revel.Controller) (*models.User, error) {
 
-	_, _, jwts, _, us, _, _ := GetServices()
+	jwts := services.GetJWTService()
+	us := services.GetUserService()
 	var token string
 	var err error
 
@@ -161,11 +163,6 @@ func GetUser(c *revel.Controller) (*models.User, error) {
 	}
 
 	return user, nil
-}
-
-func GetServices() (services.IDBService, services.IHashService, services.IJWTService, services.IResponseService, services.IUserService, services.IValidationService, services.IBookingService) {
-
-	return services.GetDBService(), services.GetHashService(), services.GetJWTService(), services.GetResponseService(), services.GetUserService(), services.GetValidationService(), services.GetBookingService()
 }
 
 func getBearerToken(c *revel.Controller) (string, error) {

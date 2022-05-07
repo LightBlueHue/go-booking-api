@@ -4,10 +4,6 @@ import (
 	"golang.org/x/crypto/bcrypt"
 )
 
-type IHashService interface {
-	HashAndSalt(password string) (string, error)
-	ComparePasswords(hashedPwd string, password string) bool
-}
 type HashService struct{}
 
 func GetHashService() IHashService {
@@ -25,7 +21,7 @@ func (s *HashService) HashAndSalt(password string) (string, error) {
 	// than the MinCost (4)
 	hash, err := bcrypt.GenerateFromPassword(pwd, bcrypt.MinCost)
 	if err != nil {
-		
+
 		return "", err
 	}
 	// GenerateFromPassword returns a byte slice so we need to

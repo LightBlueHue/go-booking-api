@@ -1,6 +1,7 @@
 package app
 
 import (
+	"go-booking-api/app/controllers"
 	"go-booking-api/app/services"
 
 	_ "github.com/revel/modules"
@@ -23,15 +24,16 @@ func init() {
 		revel.RouterFilter,            // Use the routing table to select the right Action
 		revel.FilterConfiguringFilter, // A hook for adding or removing per-Action filters.
 		revel.ParamsFilter,            // Parse parameters into Controller.Params.
-		revel.SessionFilter,           // Restore and write the session cookie.
-		revel.FlashFilter,             // Restore and write the flash cookie.
-		revel.ValidationFilter,        // Restore kept validation errors and save new ones from cookie.
-		revel.I18nFilter,              // Resolve the requested language
-		HeaderFilter,                  // Add some security based headers
-		revel.InterceptorFilter,       // Run interceptors around the action.
-		revel.CompressFilter,          // Compress the result.
-		revel.BeforeAfterFilter,       // Call the before and after filter functions
-		revel.ActionInvoker,           // Invoke the action.
+		ServicesFilter,
+		revel.SessionFilter,     // Restore and write the session cookie.
+		revel.FlashFilter,       // Restore and write the flash cookie.
+		revel.ValidationFilter,  // Restore kept validation errors and save new ones from cookie.
+		revel.I18nFilter,        // Resolve the requested language
+		HeaderFilter,            // Add some security based headers
+		revel.InterceptorFilter, // Run interceptors around the action.
+		revel.CompressFilter,    // Compress the result.
+		revel.BeforeAfterFilter, // Call the before and after filter functions
+		revel.ActionInvoker,     // Invoke the action.
 	}
 
 	// Register startup functions with OnAppStart
@@ -50,6 +52,40 @@ var HeaderFilter = func(c *revel.Controller, fc []revel.Filter) {
 	c.Response.Out.Header().Add("X-XSS-Protection", "1; mode=block")
 	c.Response.Out.Header().Add("X-Content-Type-Options", "nosniff")
 	c.Response.Out.Header().Add("Referrer-Policy", "strict-origin-when-cross-origin")
+
+	fc[0](c, fc[1:]) // Execute the next filter stage.
+}
+
+var ServicesFilter = func(c *revel.Controller, fc []revel.Filter) {
+
+	ds, hs, jwts, rs, us, vs, bs := GetServices()
+	if ac, ok := c.AppController.(*controllers.AccountController); ok {
+
+		ac.Service = services.Service{
+
+			DBService:         ds,
+			HashService:       hs,
+			JWTService:        jwts,
+			ResponseService:   rs,
+			UserService:       us,
+			ValidationService: vs,
+			BookingService:    bs,
+		}
+	}
+
+	if bc, ok := c.AppController.(*controllers.BookingController); ok {
+
+		bc.Service = services.Service{
+
+			DBService:         ds,
+			HashService:       hs,
+			JWTService:        jwts,
+			ResponseService:   rs,
+			UserService:       us,
+			ValidationService: vs,
+			BookingService:    bs,
+		}
+	}
 
 	fc[0](c, fc[1:]) // Execute the next filter stage.
 }
@@ -80,4 +116,9 @@ func getDBInfo() services.DbInfo {
 	dbInfo.TimeZone = revel.Config.StringDefault("db.tz", "")
 	dbInfo.User = revel.Config.StringDefault("db.user", "")
 	return dbInfo
+}
+
+func GetServices() (services.IDBService, services.IHashService, services.IJWTService, services.IResponseService, services.IUserService, services.IValidationService, services.IBookingService) {
+
+	return services.GetDBService(), services.GetHashService(), services.GetJWTService(), services.GetResponseService(), services.GetUserService(), services.GetValidationService(), services.GetBookingService()
 }

@@ -7,11 +7,6 @@ import (
 	"github.com/revel/revel"
 )
 
-type IResponseService interface {
-	CreateErrorResponse(code int, message string, validationErrors []*revel.ValidationError) *responses.ErrorResponse
-	CreateOperationResponse(context string, value interface{}) *responses.OperationResponse
-}
-
 type ResponseService struct {
 }
 
