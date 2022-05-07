@@ -1,6 +1,7 @@
 package services
 
 import (
+	"fmt"
 	"go-booking-api/app/models"
 
 	"gorm.io/driver/postgres"
@@ -44,11 +45,21 @@ const (
 )
 
 type IDBService interface {
-	InitDB(database *gorm.DB)
+	InitDB(database *gorm.DB, dbInfo DbInfo)
 	GetDB() *gorm.DB
 }
 
 type DBService struct {
+}
+
+type DbInfo struct {
+	Host     string
+	Port     int
+	User     string
+	Password string
+	DbName   string
+	SslMode  string
+	TimeZone string
 }
 
 var db *gorm.DB
@@ -58,20 +69,22 @@ func GetDBService() IDBService {
 	return &DBService{}
 }
 
-func (dbService *DBService) InitDB(database *gorm.DB) {
+func (dbService *DBService) InitDB(database *gorm.DB, dbInfo DbInfo) {
 
 	var dbResult *gorm.DB
 	var err error
+	connStrWithDbName := fmt.Sprintf("host=%s user=%s password=%s dbname=%s port=%d sslmode=%s TimeZone=%s", dbInfo.Host, dbInfo.User, dbInfo.Password, dbInfo.DbName, dbInfo.Port, dbInfo.SslMode, dbInfo.TimeZone)
+	connStrWithoutDbName := fmt.Sprintf("host=%s user=%s password=%s port=%d sslmode=%s TimeZone=%s", dbInfo.Host, dbInfo.User, dbInfo.Password, dbInfo.Port, dbInfo.SslMode, dbInfo.TimeZone)
 
 	database, err = gorm.Open(postgres.New(postgres.Config{
-		DSN:                  "user=postgres password=postgres dbname=go-booking-api port=5432 sslmode=disable TimeZone=Europe/London",
+		DSN:                  connStrWithDbName,
 		PreferSimpleProtocol: true, // disables implicit prepared statement usage
 	}), &gorm.Config{})
 
 	if err != nil {
 
 		database, err = gorm.Open(postgres.New(postgres.Config{
-			DSN:                  "user=postgres password=postgres port=5432 sslmode=disable TimeZone=Europe/London",
+			DSN:                  connStrWithoutDbName,
 			PreferSimpleProtocol: true, // disables implicit prepared statement usage
 		}), &gorm.Config{})
 

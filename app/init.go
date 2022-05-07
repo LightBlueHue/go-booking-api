@@ -63,6 +63,21 @@ var HeaderFilter = func(c *revel.Controller, fc []revel.Filter) {
 //}
 
 func InitDB() {
+
 	var db *gorm.DB
-	services.GetDBService().InitDB(db)	
+	services.GetDBService().InitDB(db, getDBInfo())
+}
+
+func getDBInfo() services.DbInfo {
+
+	dbInfo := services.DbInfo{}
+
+	dbInfo.Host = revel.Config.StringDefault("db.host", "")
+	dbInfo.DbName = revel.Config.StringDefault("db.dbname", "")
+	dbInfo.Password = revel.Config.StringDefault("db.password", "")
+	dbInfo.Port = revel.Config.IntDefault("db.port", 0)
+	dbInfo.SslMode = revel.Config.StringDefault("db.sslmode", "")
+	dbInfo.TimeZone = revel.Config.StringDefault("db.tz", "")
+	dbInfo.User = revel.Config.StringDefault("db.user", "")
+	return dbInfo
 }
