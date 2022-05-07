@@ -1,0 +1,190 @@
+{
+	"info": {
+		"_postman_id": "ed100f72-07b1-4234-9a46-87f82a080b62",
+		"name": "go-booking-api",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "register",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"email\":\"yac@yac.co\",\r\n    \"password\":\"yacc\",\r\n    \"confirmpassword\":\"yacc\",\r\n    \"firstname\":\"yac\",\r\n    \"lastname\":\"yaccadamia\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{base_url}}accounts/register",
+					"host": [
+						"{{base_url}}accounts"
+					],
+					"path": [
+						"register"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "login",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"let jsonData = JSON.parse(responseBody);\r",
+							"\r",
+							"pm.collectionVariables.set(\"bearer_token\", jsonData.value);"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "",
+							"type": "string"
+						}
+					]
+				},
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"email\":\"yac@yac.co\",\r\n    \"password\": \"yacc\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{base_url}}accounts/login",
+					"host": [
+						"{{base_url}}accounts"
+					],
+					"path": [
+						"login"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "book",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{base_url}}bookings/1",
+					"host": [
+						"{{base_url}}bookings"
+					],
+					"path": [
+						"1"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "bookings",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "GET",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{base_url}}bookings/",
+					"host": [
+						"{{base_url}}bookings"
+					],
+					"path": [
+						""
+					]
+				}
+			},
+			"response": []
+		}
+	],
+	"auth": {
+		"type": "bearer",
+		"bearer": [
+			{
+				"key": "token",
+				"value": "{{bearer_token}}",
+				"type": "string"
+			}
+		]
+	},
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		}
+	],
+	"variable": [
+		{
+			"key": "base_url",
+			"value": "localhost:9000/"
+		},
+		{
+			"key": "bearer_token",
+			"value": ""
+		}
+	]
+}
