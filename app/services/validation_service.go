@@ -39,6 +39,7 @@ func (s *ValidationService) ValidateRegisterRequest(v *revel.Validation, l *requ
 }
 
 func (s *ValidationService) ValidateBookingRequest(v *revel.Validation, count uint) {
+
 	min := int(count)
 	v.Min(min, 1).Message(VALIDATION_BOOKING_REQUEST_VALID_NUMBER)
 }
