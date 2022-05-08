@@ -43,16 +43,16 @@ The directory structure of a generated Revel application:
 * The [Revel sample apps](http://revel.github.io/examples/index.html).
 * The [API documentation](https://godoc.org/github.com/revel/revel).
 
-[Json tags](https://drstearns.github.io/tutorials/gojson/)
-[Odata response](https://docs.oasis-open.org/odata/odata-json-format/v4.0/errata02/os/odata-json-format-v4.0-errata02-os-complete.html#_Toc403940655)
-[jwt](https://medium.com/wesionary-team/jwt-authentication-in-golang-with-gin-63dbc0816d55)
-https://stackoverflow.com/questions/44589854/is-it-possible-to-debug-go-revel-framework-from-visual-studio-code
-https://medium.com/learn-go/go-path-explained-cab31a0d90b9
-https://go.dev/ref/spec#Passing_arguments_to_..._parameters
-https://pkg.go.dev/syreclabs.com/go/faker#readme-name
+* [Json tags](https://drstearns.github.io/tutorials/gojson/)
+* [Odata response](https://docs.oasis-open.org/odata/odata-json-format/v4.0/errata02/os/odata-json-format-v4.0-errata02-os-complete.html#_Toc403940655)
+* [jwt](https://medium.com/wesionary-team/jwt-authentication-in-golang-with-gin-63dbc0816d55)
+* https://stackoverflow.com/questions/44589854/is-it-possible-to-debug-go-revel-framework-from-visual-studio-code
+* https://medium.com/learn-go/go-path-explained-cab31a0d90b9
+* https://go.dev/ref/spec#Passing_arguments_to_..._parameters
+* https://pkg.go.dev/syreclabs.com/go/faker#readme-name
 
 
-#### Docker
+## Docker
 `docker run --name postgres -p 5432:5432 -e POSTGRES_PASSWORD=postgres -d postgres`
 
 `docker run --name pgAdmin -p 4000:80 -e PGADMIN_DEFAULT_EMAIL="postgres@postgres.com" -e PGADMIN_DEFAULT_PASSWORD="postgres" dpage/pgadmin4`
