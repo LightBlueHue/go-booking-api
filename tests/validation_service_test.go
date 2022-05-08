@@ -176,7 +176,7 @@ func Test_ValidateRegisterRequest_NonMatchingPasswords_ReturnsError(t *testing.T
 	target := services.GetValidationService()
 	rv := createValidation()
 	email := faker.Internet().Email()
-	pwd:= faker.Internet().Password(4, 6)
+	pwd := faker.Internet().Password(4, 6)
 	confPwd1 := faker.Internet().Password(0, 0)
 	confPwd2 := faker.Internet().Password(0, 3)
 	confPwd3 := faker.Internet().Password(20, 30)
@@ -196,6 +196,27 @@ func Test_ValidateRegisterRequest_NonMatchingPasswords_ReturnsError(t *testing.T
 		assert.Equal(t, true, rv.HasErrors())
 		assert.Equal(t, services.VALIDATION_REGISTER_REQUEST_PASSWORD_NOMATCH, rv.Errors[i].Message)
 	}
+}
+
+func Test_ValidateBookingRequest_InValidNumber_ReturnsError(t *testing.T) {
+
+	target := services.GetValidationService()
+	rv := createValidation()
+
+	target.ValidateBookingRequest(rv, 0)
+
+	assert.Equal(t, true, rv.HasErrors())
+	assert.Equal(t, services.VALIDATION_BOOKING_REQUEST_VALID_NUMBER, rv.Errors[0].Message)
+}
+
+func Test_ValidateBookingRequest_ValidNumber_ReturnsNoError(t *testing.T) {
+
+	target := services.GetValidationService()
+	rv := createValidation()
+
+	target.ValidateBookingRequest(rv, uint(faker.RandomInt(1, 1000)))
+
+	assert.Equal(t, false, rv.HasErrors())
 }
 
 func createValidation() *revel.Validation {
