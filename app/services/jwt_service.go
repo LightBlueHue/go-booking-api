@@ -9,7 +9,8 @@ import (
 )
 
 const (
-	EMAIL_CLAIM JwtClaimType = "email"
+	EMAIL_CLAIM           JwtClaimType = "email"
+	GO_BOOKING_API_SECRET string       = "GO_BOOKING_API_SECRET"
 )
 
 type JwtClaimType string
@@ -30,7 +31,7 @@ func GetJWTService() IJWTService {
 
 	return &JwtService{
 		secretKey: getSecretKey(),
-		issure:    "go-booikng-api",
+		issure:    "go-booking-api",
 	}
 }
 
@@ -78,6 +79,10 @@ func (service *JwtService) GetClaim(token string, claimType JwtClaimType) (strin
 
 	if claims, ok := jwtToken.Claims.(jwt.MapClaims); ok {
 
+		if claim := claims[string(claimType)]; claim == nil {
+
+			return "", fmt.Errorf("Unable to retrieve claim")
+		}
 		return fmt.Sprint(claims[string(claimType)]), nil
 	}
 
@@ -86,10 +91,11 @@ func (service *JwtService) GetClaim(token string, claimType JwtClaimType) (strin
 
 func getSecretKey() string {
 
-	secret := os.Getenv("SECRET")
+	secret := os.Getenv(GO_BOOKING_API_SECRET)
 	if secret == "" {
 
-		secret = "secret"
+		panic(GO_BOOKING_API_SECRET)
 	}
+
 	return secret
 }

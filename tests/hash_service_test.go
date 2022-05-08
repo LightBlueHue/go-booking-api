@@ -17,7 +17,7 @@ func Test_HashAndSalt_ValidPassword_ReturnsCorrectData(t *testing.T) {
 
 	assert.Nil(t, err)
 	assert.NotNil(t, actual)
-	assert.Greater(t, len(actual), 0)
+	assert.NotEmpty(t, actual)
 }
 
 func Test_ComparePasswords_WithCorrectData_ReturnsTrue(t *testing.T) {
