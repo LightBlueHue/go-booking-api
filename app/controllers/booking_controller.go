@@ -17,7 +17,7 @@ type BookingController struct {
 
 func (c *BookingController) Book(count uint) revel.Result {
 
-	c.Service.ValidationService.ValidateBookingRequest(c.Controller, count)
+	c.Service.ValidationService.ValidateBookingRequest(c.Validation, count)
 	if c.Validation.HasErrors() {
 
 		c.Response.Status = http.StatusBadRequest

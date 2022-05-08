@@ -65,7 +65,7 @@ type IUserService interface {
 }
 
 type IValidationService interface {
-	ValidateLoginRequest(c *revel.Controller, l *requests.LoginRequest)
-	ValidateRegisterRequest(c *revel.Controller, l *requests.RegisterRequest)
-	ValidateBookingRequest(c *revel.Controller, count uint)
+	ValidateLoginRequest(v *revel.Validation, l *requests.LoginRequest)
+	ValidateRegisterRequest(v *revel.Validation, l *requests.RegisterRequest)
+	ValidateBookingRequest(v *revel.Validation, count uint)
 }

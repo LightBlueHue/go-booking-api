@@ -49,6 +49,7 @@ The directory structure of a generated Revel application:
 https://stackoverflow.com/questions/44589854/is-it-possible-to-debug-go-revel-framework-from-visual-studio-code
 https://medium.com/learn-go/go-path-explained-cab31a0d90b9
 https://go.dev/ref/spec#Passing_arguments_to_..._parameters
+https://pkg.go.dev/syreclabs.com/go/faker#readme-name
 
 
 #### Docker
