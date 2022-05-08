@@ -24,7 +24,7 @@ func Test_ValidateLoginRequest_InValidEmail_ReturnsError(t *testing.T) {
 
 		target.ValidateLoginRequest(rv, &request)
 
-		assert.Equal(t, true, rv.HasErrors())
+		assert.True(t, rv.HasErrors())
 		assert.Contains(t, rv.Errors[i].Message, "email")
 	}
 }
@@ -43,7 +43,7 @@ func Test_ValidateLoginRequest_ValidEmail_ReturnsNoError(t *testing.T) {
 
 		target.ValidateLoginRequest(rv, &request)
 
-		assert.Equal(t, false, rv.HasErrors())
+		assert.False(t, rv.HasErrors())
 	}
 }
 
@@ -61,7 +61,7 @@ func Test_ValidateLoginRequest_InValidPassword_ReturnsError(t *testing.T) {
 
 		target.ValidateLoginRequest(rv, &request)
 
-		assert.Equal(t, true, rv.HasErrors())
+		assert.True(t, rv.HasErrors())
 		assert.Equal(t, services.VALIDATION_REQUEST_PASSWORD_LENGTH, rv.Errors[i].Message)
 	}
 }
@@ -81,7 +81,7 @@ func Test_ValidateLoginRequest_ValidPassword_ReturnsNoError(t *testing.T) {
 
 		target.ValidateLoginRequest(rv, &request)
 
-		assert.Equal(t, false, rv.HasErrors())
+		assert.False(t, rv.HasErrors())
 	}
 }
 
@@ -100,7 +100,7 @@ func Test_ValidateRegisterRequest_InValidFirstName_ReturnsError(t *testing.T) {
 
 	target.ValidateRegisterRequest(rv, &request)
 
-	assert.Equal(t, true, rv.HasErrors())
+	assert.True(t, rv.HasErrors())
 	assert.Equal(t, services.VALIDATION_REGISTER_REQUEST_FIRSTNAME_INVALID, rv.Errors[0].Message)
 }
 
@@ -119,7 +119,7 @@ func Test_ValidateRegisterRequest_InValidLastName_ReturnsError(t *testing.T) {
 
 	target.ValidateRegisterRequest(rv, &request)
 
-	assert.Equal(t, true, rv.HasErrors())
+	assert.True(t, rv.HasErrors())
 	assert.Equal(t, services.VALIDATION_REGISTER_REQUEST_LASTNAME_INVALID, rv.Errors[0].Message)
 }
 
@@ -140,7 +140,7 @@ func Test_ValidateRegisterRequest_InValidEmail_ReturnsError(t *testing.T) {
 
 		target.ValidateRegisterRequest(rv, &request)
 
-		assert.Equal(t, true, rv.HasErrors())
+		assert.True(t, rv.HasErrors())
 		assert.Contains(t, rv.Errors[i].Message, "email")
 	}
 }
@@ -166,7 +166,7 @@ func Test_ValidateRegisterRequest_InValidPassword_ReturnsError(t *testing.T) {
 
 		target.ValidateRegisterRequest(rv, &request)
 
-		assert.Equal(t, true, rv.HasErrors())
+		assert.True(t, rv.HasErrors())
 		assert.Equal(t, services.VALIDATION_REQUEST_PASSWORD_LENGTH, rv.Errors[i].Message)
 	}
 }
@@ -193,7 +193,7 @@ func Test_ValidateRegisterRequest_NonMatchingPasswords_ReturnsError(t *testing.T
 
 		target.ValidateRegisterRequest(rv, &request)
 
-		assert.Equal(t, true, rv.HasErrors())
+		assert.True(t, rv.HasErrors())
 		assert.Equal(t, services.VALIDATION_REGISTER_REQUEST_PASSWORD_NOMATCH, rv.Errors[i].Message)
 	}
 }
@@ -205,7 +205,7 @@ func Test_ValidateBookingRequest_InValidNumber_ReturnsError(t *testing.T) {
 
 	target.ValidateBookingRequest(rv, 0)
 
-	assert.Equal(t, true, rv.HasErrors())
+	assert.True(t, rv.HasErrors())
 	assert.Equal(t, services.VALIDATION_BOOKING_REQUEST_VALID_NUMBER, rv.Errors[0].Message)
 }
 
@@ -216,7 +216,7 @@ func Test_ValidateBookingRequest_ValidNumber_ReturnsNoError(t *testing.T) {
 
 	target.ValidateBookingRequest(rv, uint(faker.RandomInt(1, 1000)))
 
-	assert.Equal(t, false, rv.HasErrors())
+	assert.False(t, rv.HasErrors())
 }
 
 func createValidation() *revel.Validation {
