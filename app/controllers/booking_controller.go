@@ -45,7 +45,7 @@ func (c *BookingController) Book(count uint) revel.Result {
 
 	c.Response.Status = http.StatusCreated
 	bookingResponse := responses.BookingResponse{BookingNumber: bookingId, Name: fmt.Sprintf("%s %s", user.FirstName, user.LastName), Tickets: count}
-	response := responses.OperationResponse{Value: bookingResponse}
+	response := c.Service.ResponseService.CreateOperationResponse("", bookingResponse)
 	return c.RenderJSON(response)
 }
 
@@ -79,7 +79,7 @@ func (c *BookingController) GetBookings() revel.Result {
 		bookingResponses = append(bookingResponses, responses.BookingResponse{BookingNumber: booking.ID, Name: fmt.Sprintf("%s %s", user.FirstName, user.LastName), Tickets: booking.Tickets})
 	}
 
-	response := responses.OperationResponse{Value: bookingResponses}
+	response := c.Service.ResponseService.CreateOperationResponse("", bookingResponses)
 	return c.RenderJSON(response)
 }
 
