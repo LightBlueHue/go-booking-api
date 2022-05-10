@@ -120,7 +120,7 @@ func IsLoggedIn(c *revel.Controller, s services.Service) revel.Result {
 	}
 
 	var user *models.User
-	if user, err = s.UserService.GetByToken(token); err != nil || user == nil {
+	if user, err = s.UserService.GetByToken(token, s.JWTService); err != nil || user == nil {
 
 		c.Validation.Errors = append(c.Validation.Errors, &revel.ValidationError{Message: "log in", Key: "account"})
 		c.Response.Status = http.StatusInternalServerError
@@ -147,7 +147,7 @@ func GetUser(c *revel.Controller, s services.Service) (*models.User, error) {
 	}
 
 	var user *models.User
-	if user, err = s.UserService.GetByToken(token); err != nil || user == nil {
+	if user, err = s.UserService.GetByToken(token, s.JWTService); err != nil || user == nil {
 
 		if err == nil {
 

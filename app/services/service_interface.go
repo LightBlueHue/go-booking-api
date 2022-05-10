@@ -64,7 +64,7 @@ type IUserService interface {
 	Save(user *models.User) error
 	GetByEmail(email string) (*models.User, error)
 	GetPassword(email string) (string, error)
-	GetByToken(token string) (*models.User, error)
+	GetByToken(token string, jwtService IJWTService) (*models.User, error)
 }
 
 type IValidationService interface {

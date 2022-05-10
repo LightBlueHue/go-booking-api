@@ -48,12 +48,12 @@ func (s *UserService) GetByEmail(email string) (*models.User, error) {
 	return &user, result.Error
 }
 
-func (s *UserService) GetByToken(token string) (*models.User, error) {
+func (s *UserService) GetByToken(token string, jwtService IJWTService) (*models.User, error) {
 
 	var user *models.User
 	var err error
 	var email string
-	if email, err = GetJWTService().GetClaim(token, EMAIL_CLAIM); err != nil {
+	if email, err = jwtService.GetClaim(token, EMAIL_CLAIM); err != nil {
 
 		return nil, err
 	}

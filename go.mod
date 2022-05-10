@@ -3,7 +3,7 @@ module go-booking-api
 go 1.18
 
 require (
-	github.com/revel/modules v1.1.0
+	github.com/revel/modules v0.21.0
 	github.com/revel/revel v1.1.0
 )
 
@@ -26,6 +26,7 @@ require (
 )
 
 require (
+	github.com/DATA-DOG/go-sqlmock v1.5.0
 	github.com/bradfitz/gomemcache v0.0.0-20220106215444-fb4bf637b56d // indirect
 	github.com/fsnotify/fsnotify v1.5.1 // indirect
 	github.com/go-stack/stack v1.8.1 // indirect
