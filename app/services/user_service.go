@@ -2,6 +2,8 @@ package services
 
 import (
 	"go-booking-api/app/models"
+
+	"gorm.io/gorm"
 )
 
 const (
@@ -11,49 +13,42 @@ const (
 )
 
 type UserService struct {
+	db *gorm.DB
 }
 
-func GetUserService() IUserService {
+func GetUserService(db *gorm.DB) IUserService {
 
-	return &UserService{}
+	return &UserService{db}
 }
 
-func (service *UserService) EmailExists(email string) bool {
-
-	db := GetDBService().GetDB()
+func (s *UserService) EmailExists(email string) bool {
 
 	var count int
-	db.Raw(SQL_STATEMENT_GET_EMAIL_COUNT, email).Scan(&count)
+	s.db.Raw(SQL_STATEMENT_GET_EMAIL_COUNT, email).Scan(&count)
 	return count > 0
 }
 
-func (service *UserService) GetPassword(email string) (string, error) {
-
-	db := GetDBService().GetDB()
+func (s *UserService) GetPassword(email string) (string, error) {
 
 	var pwd string
-	result := db.Raw(SQL_STATEMENT_GET_USER_PASSWORD, email).Scan(&pwd)
+	result := s.db.Raw(SQL_STATEMENT_GET_USER_PASSWORD, email).Scan(&pwd)
 	return pwd, result.Error
 }
 
-func (service *UserService) Save(user *models.User) error {
+func (s *UserService) Save(user *models.User) error {
 
-	db := GetDBService().GetDB()
-
-	result := db.Create(user)
+	result := s.db.Create(user)
 	return result.Error
 }
 
-func (service *UserService) GetByEmail(email string) (*models.User, error) {
-
-	db := GetDBService().GetDB()
+func (s *UserService) GetByEmail(email string) (*models.User, error) {
 
 	var user models.User
-	result := db.Where(SQL_STATEMENT_GET_USER_BY_EMAIL, email).First(&user)
+	result := s.db.Where(SQL_STATEMENT_GET_USER_BY_EMAIL, email).First(&user)
 	return &user, result.Error
 }
 
-func (service *UserService) GetByToken(token string) (*models.User, error) {
+func (s *UserService) GetByToken(token string) (*models.User, error) {
 
 	var user *models.User
 	var err error
@@ -63,6 +58,6 @@ func (service *UserService) GetByToken(token string) (*models.User, error) {
 		return nil, err
 	}
 
-	user, err = service.GetByEmail(email)
+	user, err = s.GetByEmail(email)
 	return user, err
 }

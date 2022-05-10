@@ -3,6 +3,8 @@ package services
 import (
 	"fmt"
 	"go-booking-api/app/models"
+
+	"gorm.io/gorm"
 )
 
 const (
@@ -16,19 +18,18 @@ type IBookingService interface {
 }
 
 type BookingService struct {
+	db *gorm.DB
 }
 
-func GetBookingService() IBookingService {
+func GetBookingService(db *gorm.DB) IBookingService {
 
-	return &BookingService{}
+	return &BookingService{db}
 }
 
 func (s *BookingService) Book(user *models.User, count uint) (uint, error) {
 
-	db := GetDBService().GetDB()
-
 	var bookingId uint
-	result := db.Raw(SQL_STATEMENT_CALL_BOOK_FUNCTION, count, user.ID).Scan(&bookingId)
+	result := s.db.Raw(SQL_STATEMENT_CALL_BOOK_FUNCTION, count, user.ID).Scan(&bookingId)
 
 	if bookingId == 0 || result.RowsAffected == 0 {
 
@@ -40,8 +41,7 @@ func (s *BookingService) Book(user *models.User, count uint) (uint, error) {
 
 func (s *BookingService) GetBookings(user *models.User) (*[]models.Booking, error) {
 
-	db := GetDBService().GetDB()
 	var bookings *[]models.Booking
-	result := db.Where(SQL_STATEMENT_GET_BOOKINGS_BY_USER_ID, user.ID).Find(&bookings)
+	result := s.db.Where(SQL_STATEMENT_GET_BOOKINGS_BY_USER_ID, user.ID).Find(&bookings)
 	return bookings, result.Error
 }

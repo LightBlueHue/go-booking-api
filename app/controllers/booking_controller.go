@@ -15,6 +15,11 @@ type BookingController struct {
 	Service services.Service
 }
 
+func (c *BookingController) Before() (result revel.Result, controller *BookingController) {
+
+	return IsLoggedIn(c.Controller, c.Service), c
+}
+
 func (c *BookingController) Book(count uint) revel.Result {
 
 	c.Service.ValidationService.ValidateBookingRequest(c.Validation, count)
@@ -27,7 +32,7 @@ func (c *BookingController) Book(count uint) revel.Result {
 
 	var user *models.User
 	var err error
-	if user, err = GetUser(c.Controller); err != nil {
+	if user, err = GetUser(c.Controller, c.Service); err != nil {
 
 		c.Validation.Errors = append(c.Validation.Errors, &revel.ValidationError{Message: "unable to authenticate user", Key: "booking"})
 		c.Response.Status = http.StatusInternalServerError
@@ -55,7 +60,7 @@ func (c *BookingController) GetBookings() revel.Result {
 	var bookings *[]models.Booking
 	var err error
 
-	if user, err = GetUser(c.Controller); err != nil {
+	if user, err = GetUser(c.Controller, c.Service); err != nil {
 
 		c.Validation.Errors = append(c.Validation.Errors, &revel.ValidationError{Message: "unable to authenticate user", Key: "booking"})
 		c.Response.Status = http.StatusInternalServerError
@@ -81,9 +86,4 @@ func (c *BookingController) GetBookings() revel.Result {
 
 	response := c.Service.ResponseService.CreateOperationResponse("", bookingResponses)
 	return c.RenderJSON(response)
-}
-
-func init() {
-
-	revel.InterceptFunc(IsLoggedIn, revel.BEFORE, &BookingController{})
 }

@@ -15,6 +15,8 @@ var (
 
 	// BuildTime revel app build-time (ldflags)
 	BuildTime string
+
+	db *gorm.DB
 )
 
 func init() {
@@ -25,8 +27,8 @@ func init() {
 		revel.FilterConfiguringFilter, // A hook for adding or removing per-Action filters.
 		revel.ParamsFilter,            // Parse parameters into Controller.Params.
 		ServicesFilter,
-		revel.SessionFilter,     // Restore and write the session cookie.
-		revel.FlashFilter,       // Restore and write the flash cookie.
+		//revel.SessionFilter,     // Restore and write the session cookie.
+		//revel.FlashFilter,       // Restore and write the flash cookie.
 		revel.ValidationFilter,  // Restore kept validation errors and save new ones from cookie.
 		revel.I18nFilter,        // Resolve the requested language
 		HeaderFilter,            // Add some security based headers
@@ -40,7 +42,7 @@ func init() {
 	// revel.DevMode and revel.RunMode only work inside of OnAppStart. See Example Startup Script
 	// ( order dependent )
 	// revel.OnAppStart(ExampleStartupScript)
-	revel.OnAppStart(InitDB)
+	// revel.OnAppStart(InitDB)
 	// revel.OnAppStart(FillCache)
 }
 
@@ -58,6 +60,7 @@ var HeaderFilter = func(c *revel.Controller, fc []revel.Filter) {
 
 var ServicesFilter = func(c *revel.Controller, fc []revel.Filter) {
 
+	initDB()
 	ds, hs, jwts, rs, us, vs, bs := GetServices()
 	if ac, ok := c.AppController.(*controllers.AccountController); ok {
 
@@ -98,10 +101,17 @@ var ServicesFilter = func(c *revel.Controller, fc []revel.Filter) {
 //	}
 //}
 
-func InitDB() {
+func GetServices() (services.IDBService, services.IHashService, services.IJWTService, services.IResponseService, services.IUserService, services.IValidationService, services.IBookingService) {
 
-	var db *gorm.DB
-	services.GetDBService().InitDB(db, getDBInfo())
+	if db == nil {
+		panic("INIT DB")
+	}
+	return services.GetDBService(db), services.GetHashService(), services.GetJWTService(), services.GetResponseService(), services.GetUserService(db), services.GetValidationService(), services.GetBookingService(db)
+}
+
+func initDB() {
+
+	db = services.GetDBService(db).InitDB(getDBInfo(), gorm.Open)
 }
 
 func getDBInfo() services.DbInfo {
@@ -116,9 +126,4 @@ func getDBInfo() services.DbInfo {
 	dbInfo.TimeZone = revel.Config.StringDefault("db.tz", "")
 	dbInfo.User = revel.Config.StringDefault("db.user", "")
 	return dbInfo
-}
-
-func GetServices() (services.IDBService, services.IHashService, services.IJWTService, services.IResponseService, services.IUserService, services.IValidationService, services.IBookingService) {
-
-	return services.GetDBService(), services.GetHashService(), services.GetJWTService(), services.GetResponseService(), services.GetUserService(), services.GetValidationService(), services.GetBookingService()
 }

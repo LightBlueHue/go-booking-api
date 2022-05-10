@@ -36,9 +36,12 @@ type IService interface {
 }
 
 type IDBService interface {
-	InitDB(database *gorm.DB, dbInfo DbInfo)
-	GetDB() *gorm.DB
+	InitDB(dbInfo DbInfo, dbIntialiser DbInitialiser) *gorm.DB
 }
+
+type (
+	DbInitialiser func(dialector gorm.Dialector, opts ...gorm.Option) (db *gorm.DB, err error)
+)
 
 type IHashService interface {
 	HashAndSalt(password string) (string, error)

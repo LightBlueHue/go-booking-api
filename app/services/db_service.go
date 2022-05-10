@@ -45,6 +45,7 @@ const (
 )
 
 type DBService struct {
+	db *gorm.DB
 }
 
 type DbInfo struct {
@@ -57,81 +58,74 @@ type DbInfo struct {
 	TimeZone string
 }
 
-var db *gorm.DB
+func GetDBService(db *gorm.DB) IDBService {
 
-func GetDBService() IDBService {
-
-	return &DBService{}
+	return &DBService{db}
 }
 
-func (dbService *DBService) InitDB(database *gorm.DB, dbInfo DbInfo) {
+func (s *DBService) InitDB(dbInfo DbInfo, open DbInitialiser) *gorm.DB {
 
 	var dbResult *gorm.DB
 	var err error
 	connStrWithDbName := fmt.Sprintf("host=%s user=%s password=%s dbname=%s port=%d sslmode=%s TimeZone=%s", dbInfo.Host, dbInfo.User, dbInfo.Password, dbInfo.DbName, dbInfo.Port, dbInfo.SslMode, dbInfo.TimeZone)
 	connStrWithoutDbName := fmt.Sprintf("host=%s user=%s password=%s port=%d sslmode=%s TimeZone=%s", dbInfo.Host, dbInfo.User, dbInfo.Password, dbInfo.Port, dbInfo.SslMode, dbInfo.TimeZone)
 
-	database, err = gorm.Open(postgres.New(postgres.Config{
+	s.db, err = open(postgres.New(postgres.Config{
 		DSN:                  connStrWithDbName,
 		PreferSimpleProtocol: true, // disables implicit prepared statement usage
 	}), &gorm.Config{})
 
 	if err != nil {
 
-		database, err = gorm.Open(postgres.New(postgres.Config{
+		s.db, err = gorm.Open(postgres.New(postgres.Config{
 			DSN:                  connStrWithoutDbName,
 			PreferSimpleProtocol: true, // disables implicit prepared statement usage
 		}), &gorm.Config{})
 
-		if dbResult = database.Exec(SQL_STATEMENT_CREATE_DB); dbResult.Error != nil {
+		if dbResult = s.db.Exec(SQL_STATEMENT_CREATE_DB); dbResult.Error != nil {
 
 			panic("failed to connect database")
 		}
 
-		database, err = gorm.Open(postgres.New(postgres.Config{
+		s.db, err = gorm.Open(postgres.New(postgres.Config{
 			DSN:                  "user=postgres password=postgres dbname=go-booking-api port=5432 sslmode=disable TimeZone=Europe/London",
 			PreferSimpleProtocol: true, // disables implicit prepared statement usage
 		}), &gorm.Config{})
 	}
 
 	// Migrate the schema
-	if tiExists := database.Migrator().HasTable(&models.TicketInventory{}); !tiExists {
+	if tiExists := s.db.Migrator().HasTable(&models.TicketInventory{}); !tiExists {
 
-		if err = database.AutoMigrate(&models.TicketInventory{}); err != nil {
+		if err = s.db.AutoMigrate(&models.TicketInventory{}); err != nil {
 
 			panic("ite")
 		}
 
-		if err = database.AutoMigrate(&models.Booking{}); err != nil {
+		if err = s.db.AutoMigrate(&models.Booking{}); err != nil {
 
 			panic("bte")
 		}
 
-		if dbResult = database.Create(&models.TicketInventory{AvailableTickets: 50, TotalTickets: 50, Name: "JusticeLeagueLive", Description: "Justice League Live"}); dbResult.Error != nil {
+		if dbResult = s.db.Create(&models.TicketInventory{AvailableTickets: 50, TotalTickets: 50, Name: "JusticeLeagueLive", Description: "Justice League Live"}); dbResult.Error != nil {
 
 			panic("ipe")
 		}
 
-		if dbResult = database.Exec(SQL_STATEMENT_CREATE_BOOK_FUNCTION); dbResult.Error != nil {
+		if dbResult = s.db.Exec(SQL_STATEMENT_CREATE_BOOK_FUNCTION); dbResult.Error != nil {
 
 			panic("utcbf")
 		}
 	}
 
-	if err = database.AutoMigrate(&models.Credentials{}); err != nil {
+	if err = s.db.AutoMigrate(&models.Credentials{}); err != nil {
 
 		panic("cte")
 	}
 
-	if err = database.AutoMigrate(&models.User{}); err != nil {
+	if err = s.db.AutoMigrate(&models.User{}); err != nil {
 
 		panic("ute")
 	}
 
-	db = database
-}
-
-func (dbService *DBService) GetDB() *gorm.DB {
-
-	return db
+	return s.db
 }

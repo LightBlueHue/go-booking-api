@@ -98,11 +98,8 @@ func (c *AccountController) Register() revel.Result {
 	return c.Result
 }
 
-func IsLoggedIn(c *revel.Controller) revel.Result {
+func IsLoggedIn(c *revel.Controller, s services.Service) revel.Result {
 
-	jwts := services.GetJWTService()
-	rs := services.GetResponseService()
-	us := services.GetUserService()
 	var token string
 	var err error
 
@@ -110,34 +107,32 @@ func IsLoggedIn(c *revel.Controller) revel.Result {
 
 		c.Response.Status = http.StatusUnauthorized
 		c.Validation.Errors = append(c.Validation.Errors, &revel.ValidationError{Message: err.Error(), Key: "account"})
-		resp := rs.CreateErrorResponse(c.Response.Status, "Please log in", c.Validation.Errors)
+		resp := s.ResponseService.CreateErrorResponse(c.Response.Status, "Please log in", c.Validation.Errors)
 		return c.RenderJSON(resp)
 	}
 
-	if jwtToken, err := jwts.ValidateToken(token); err != nil || !jwtToken.Valid {
+	if jwtToken, err := s.JWTService.ValidateToken(token); err != nil || !jwtToken.Valid {
 
 		c.Response.Status = http.StatusUnauthorized
 		c.Validation.Errors = append(c.Validation.Errors, &revel.ValidationError{Message: "log in", Key: "account"})
-		resp := rs.CreateErrorResponse(c.Response.Status, "Please log in", c.Validation.Errors)
+		resp := s.ResponseService.CreateErrorResponse(c.Response.Status, "Please log in", c.Validation.Errors)
 		return c.RenderJSON(resp)
 	}
 
 	var user *models.User
-	if user, err = us.GetByToken(token); err != nil || user == nil {
+	if user, err = s.UserService.GetByToken(token); err != nil || user == nil {
 
 		c.Validation.Errors = append(c.Validation.Errors, &revel.ValidationError{Message: "log in", Key: "account"})
 		c.Response.Status = http.StatusInternalServerError
-		resp := rs.CreateErrorResponse(c.Response.Status, "Please log in", c.Validation.Errors)
+		resp := s.ResponseService.CreateErrorResponse(c.Response.Status, "Please log in", c.Validation.Errors)
 		return c.RenderJSON(resp)
 	}
 
 	return nil
 }
 
-func GetUser(c *revel.Controller) (*models.User, error) {
+func GetUser(c *revel.Controller, s services.Service) (*models.User, error) {
 
-	jwts := services.GetJWTService()
-	us := services.GetUserService()
 	var token string
 	var err error
 
@@ -146,13 +141,13 @@ func GetUser(c *revel.Controller) (*models.User, error) {
 		return nil, err
 	}
 
-	if jwtToken, err := jwts.ValidateToken(token); err != nil || !jwtToken.Valid {
+	if jwtToken, err := s.JWTService.ValidateToken(token); err != nil || !jwtToken.Valid {
 
 		return nil, err
 	}
 
 	var user *models.User
-	if user, err = us.GetByToken(token); err != nil || user == nil {
+	if user, err = s.UserService.GetByToken(token); err != nil || user == nil {
 
 		if err == nil {
 
