@@ -39,8 +39,8 @@ jobs:
         
     # Run build of the application
     - name: Build
-      run: go build -v ./../../tests
+      run: go build -v ./..
 
     # Run testing on the code
     - name: Test
-      run: go test -v ./../../tests
+      run: go test -v ./..
