@@ -8,7 +8,7 @@ on:
   pull_request:
     branches: [ main ]
 
- env:
+env:
   ## Sets environment variable
   GO_BOOKING_API_SECRET: E59DD115760893782F7FB8CC6C387DE86FFEC3C186A8EFE24184E9CABDB2EFC3
 
