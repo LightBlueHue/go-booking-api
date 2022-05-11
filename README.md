@@ -1,4 +1,5 @@
 # Welcome to Revel
+[![Build](https://github.com/LightBlueHue/go-booking-api/actions/workflows/go.yml/badge.svg?branch=main)](https://github.com/LightBlueHue/go-booking-api/actions/workflows/go.yml)
 
 A high-productivity web framework for the [Go language](http://www.golang.org/).
 
