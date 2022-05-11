@@ -39,8 +39,8 @@ jobs:
         
     # Run build of the application
     - name: Build
-      run: go build -v .
+      run: go build -v ./../go-booking-api//tests
 
     # Run testing on the code
     - name: Test
-      run: go test -v ./../tests
+      run: go test -v ./../go-booking-api//tests
