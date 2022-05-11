@@ -45,6 +45,12 @@ func (s *UserService) GetByEmail(email string) (*models.User, error) {
 
 	var user models.User
 	result := s.db.Where(SQL_STATEMENT_GET_USER_BY_EMAIL, email).First(&user)
+
+	if result.Error != nil {
+
+		return nil, result.Error
+	}
+
 	return &user, result.Error
 }
 
