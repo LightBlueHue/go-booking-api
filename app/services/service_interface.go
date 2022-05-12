@@ -72,3 +72,8 @@ type IValidationService interface {
 	ValidateRegisterRequest(v *revel.Validation, l *requests.RegisterRequest)
 	ValidateBookingRequest(v *revel.Validation, count uint)
 }
+
+type IBookingService interface {
+	Book(userId uint, count uint) (uint, error)
+	GetBookings(userId uint) (*[]models.Booking, error)
+}

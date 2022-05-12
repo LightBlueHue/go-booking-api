@@ -41,7 +41,7 @@ func (c *BookingController) Book(count uint) revel.Result {
 	}
 
 	var bookingId uint
-	if bookingId, err = c.Service.BookingService.Book(user, count); err != nil {
+	if bookingId, err = c.Service.BookingService.Book(user.ID, count); err != nil {
 
 		c.Response.Status = http.StatusInternalServerError
 		resp := c.Service.ResponseService.CreateErrorResponse(c.Response.Status, "Booking error", c.Validation.Errors)
@@ -68,7 +68,7 @@ func (c *BookingController) GetBookings() revel.Result {
 		return c.RenderJSON(resp)
 	}
 
-	if bookings, err = c.Service.BookingService.GetBookings(user); err != nil {
+	if bookings, err = c.Service.BookingService.GetBookings(user.ID); err != nil {
 
 		c.Validation.Errors = append(c.Validation.Errors, &revel.ValidationError{Message: "unable to to retrieve bookings", Key: "booking"})
 		c.Response.Status = http.StatusInternalServerError
