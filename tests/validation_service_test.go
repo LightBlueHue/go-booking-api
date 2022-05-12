@@ -10,7 +10,7 @@ import (
 	"syreclabs.com/go/faker"
 )
 
-func Test_ValidateLoginRequest_InValidEmail_ReturnsError(t *testing.T) {
+func Test_ValidateLoginRequest_InValidEmail_Returns_Error(t *testing.T) {
 
 	target := services.GetValidationService()
 	rv := createValidation()
@@ -29,7 +29,7 @@ func Test_ValidateLoginRequest_InValidEmail_ReturnsError(t *testing.T) {
 	}
 }
 
-func Test_ValidateLoginRequest_ValidEmail_ReturnsNoError(t *testing.T) {
+func Test_ValidateLoginRequest_ValidEmail_Returns_NoError(t *testing.T) {
 
 	target := services.GetValidationService()
 	rv := createValidation()
@@ -47,7 +47,7 @@ func Test_ValidateLoginRequest_ValidEmail_ReturnsNoError(t *testing.T) {
 	}
 }
 
-func Test_ValidateLoginRequest_InValidPassword_ReturnsError(t *testing.T) {
+func Test_ValidateLoginRequest_InValidPassword_Returns_Error(t *testing.T) {
 
 	target := services.GetValidationService()
 	rv := createValidation()
@@ -66,7 +66,7 @@ func Test_ValidateLoginRequest_InValidPassword_ReturnsError(t *testing.T) {
 	}
 }
 
-func Test_ValidateLoginRequest_ValidPassword_ReturnsNoError(t *testing.T) {
+func Test_ValidateLoginRequest_ValidPassword_Returns_NoError(t *testing.T) {
 
 	target := services.GetValidationService()
 	rv := createValidation()
@@ -85,7 +85,7 @@ func Test_ValidateLoginRequest_ValidPassword_ReturnsNoError(t *testing.T) {
 	}
 }
 
-func Test_ValidateRegisterRequest_InValidFirstName_ReturnsError(t *testing.T) {
+func Test_ValidateRegisterRequest_InValidFirstName_Returns_Error(t *testing.T) {
 
 	target := services.GetValidationService()
 	rv := createValidation()
@@ -104,7 +104,7 @@ func Test_ValidateRegisterRequest_InValidFirstName_ReturnsError(t *testing.T) {
 	assert.Equal(t, services.VALIDATION_REGISTER_REQUEST_FIRSTNAME_INVALID, rv.Errors[0].Message)
 }
 
-func Test_ValidateRegisterRequest_InValidLastName_ReturnsError(t *testing.T) {
+func Test_ValidateRegisterRequest_InValidLastName_Returns_Error(t *testing.T) {
 
 	target := services.GetValidationService()
 	rv := createValidation()
@@ -123,7 +123,7 @@ func Test_ValidateRegisterRequest_InValidLastName_ReturnsError(t *testing.T) {
 	assert.Equal(t, services.VALIDATION_REGISTER_REQUEST_LASTNAME_INVALID, rv.Errors[0].Message)
 }
 
-func Test_ValidateRegisterRequest_InValidEmail_ReturnsError(t *testing.T) {
+func Test_ValidateRegisterRequest_InValidEmail_Returns_Error(t *testing.T) {
 
 	target := services.GetValidationService()
 	rv := createValidation()
@@ -145,7 +145,7 @@ func Test_ValidateRegisterRequest_InValidEmail_ReturnsError(t *testing.T) {
 	}
 }
 
-func Test_ValidateRegisterRequest_InValidPassword_ReturnsError(t *testing.T) {
+func Test_ValidateRegisterRequest_InValidPassword_Returns_Error(t *testing.T) {
 
 	target := services.GetValidationService()
 	rv := createValidation()
@@ -171,7 +171,7 @@ func Test_ValidateRegisterRequest_InValidPassword_ReturnsError(t *testing.T) {
 	}
 }
 
-func Test_ValidateRegisterRequest_NonMatchingPasswords_ReturnsError(t *testing.T) {
+func Test_ValidateRegisterRequest_NonMatchingPasswords_Returns_Error(t *testing.T) {
 
 	target := services.GetValidationService()
 	rv := createValidation()
@@ -198,7 +198,7 @@ func Test_ValidateRegisterRequest_NonMatchingPasswords_ReturnsError(t *testing.T
 	}
 }
 
-func Test_ValidateBookingRequest_InValidNumber_ReturnsError(t *testing.T) {
+func Test_ValidateBookingRequest_InValidNumber_Returns_Error(t *testing.T) {
 
 	target := services.GetValidationService()
 	rv := createValidation()
@@ -209,7 +209,7 @@ func Test_ValidateBookingRequest_InValidNumber_ReturnsError(t *testing.T) {
 	assert.Equal(t, services.VALIDATION_BOOKING_REQUEST_VALID_NUMBER, rv.Errors[0].Message)
 }
 
-func Test_ValidateBookingRequest_ValidNumber_ReturnsNoError(t *testing.T) {
+func Test_ValidateBookingRequest_ValidNumber_Returns_NoError(t *testing.T) {
 
 	target := services.GetValidationService()
 	rv := createValidation()

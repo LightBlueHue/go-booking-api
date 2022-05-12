@@ -8,7 +8,7 @@ import (
 	"syreclabs.com/go/faker"
 )
 
-func Test_HashAndSalt_ValidPassword_ReturnsCorrectData(t *testing.T) {
+func Test_HashAndSalt_ValidPassword_Returns_CorrectData(t *testing.T) {
 
 	target := services.GetHashService()
 
@@ -20,7 +20,7 @@ func Test_HashAndSalt_ValidPassword_ReturnsCorrectData(t *testing.T) {
 	assert.NotEmpty(t, actual)
 }
 
-func Test_ComparePasswords_WithCorrectData_ReturnsTrue(t *testing.T) {
+func Test_ComparePasswords_WithCorrectData_Returns_True(t *testing.T) {
 
 	target := services.GetHashService()
 
@@ -34,7 +34,7 @@ func Test_ComparePasswords_WithCorrectData_ReturnsTrue(t *testing.T) {
 	assert.True(t, actual)
 }
 
-func Test_ComparePasswords_WithInValidData_ReturnsFalse(t *testing.T) {
+func Test_ComparePasswords_WithInValidData_Returns_False(t *testing.T) {
 
 	pwds := []string{faker.Internet().Password(4, 20), ""}
 	target := services.GetHashService()

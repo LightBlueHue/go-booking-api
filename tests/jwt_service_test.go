@@ -9,7 +9,7 @@ import (
 	"syreclabs.com/go/faker"
 )
 
-func Test_GenerateToken_ReturnsToken(t *testing.T) {
+func Test_GenerateToken_Returns_Token(t *testing.T) {
 
 	data := make(map[string]bool)
 	data[faker.Internet().Email()] = false
@@ -25,7 +25,7 @@ func Test_GenerateToken_ReturnsToken(t *testing.T) {
 	}
 }
 
-func Test_ValidateToken_ValidToken_ReturnsToken(t *testing.T) {
+func Test_ValidateToken_ValidToken_Returns_Token(t *testing.T) {
 
 	target := services.GetJWTService()
 	email := faker.Internet().Email()
@@ -38,7 +38,7 @@ func Test_ValidateToken_ValidToken_ReturnsToken(t *testing.T) {
 	assert.NotNil(t, actual)
 }
 
-func Test_ValidateToken_WrongTokenFormat_ReturnsError(t *testing.T) {
+func Test_ValidateToken_WrongTokenFormat_Returns_Error(t *testing.T) {
 
 	os.Setenv(services.GO_BOOKING_API_SECRET, "E59DD115760893782F7FB8CC6C387DE86FFEC3C186A8EFE24184E9CABDB2EFC3")
 	token := faker.RandomString(229)
@@ -46,11 +46,11 @@ func Test_ValidateToken_WrongTokenFormat_ReturnsError(t *testing.T) {
 
 	actual, err := target.ValidateToken(token)
 
-	assert.NotNil(t, err)
+	assert.Error(t, err)
 	assert.Nil(t, actual)
 }
 
-func Test_ValidateToken_ExpiredToken_ReturnsInValid(t *testing.T) {
+func Test_ValidateToken_ExpiredToken_Returns_Error(t *testing.T) {
 
 	os.Setenv(services.GO_BOOKING_API_SECRET, "E59DD115760893782F7FB8CC6C387DE86FFEC3C186A8EFE24184E9CABDB2EFC3")
 	expiredToken := "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJuYW1lIjoieWFjQHlhYy5jbyIsImVtYWlsIjoieWFjQHlhYy5jbyIsInVzZXIiOnRydWUsImV4cCI6MTY1MjAzMzc1MywiaWF0IjoxNjUyMDMzNzUyLCJpc3MiOiJnby1ib29raW5nLWFwaSJ9.-t_MwxN_sQ5pxG6B0X1zrtdCnefCcXfvi1byCrpDQjg"
@@ -58,12 +58,12 @@ func Test_ValidateToken_ExpiredToken_ReturnsInValid(t *testing.T) {
 
 	actual, err := target.ValidateToken(expiredToken)
 
-	assert.NotNil(t, err)
+	assert.Error(t, err)
 	assert.NotNil(t, actual)
 	assert.False(t, actual.Valid)
 }
 
-func Test_GetClaim_ValidToken_ReturnsCorrectClaim(t *testing.T) {
+func Test_GetClaim_ValidToken_Returns_CorrectClaim(t *testing.T) {
 
 	os.Setenv(services.GO_BOOKING_API_SECRET, "E59DD115760893782F7FB8CC6C387DE86FFEC3C186A8EFE24184E9CABDB2EFC3")
 	target := services.GetJWTService()
@@ -77,7 +77,7 @@ func Test_GetClaim_ValidToken_ReturnsCorrectClaim(t *testing.T) {
 	assert.Equal(t, email, actual)
 }
 
-func Test_GetClaim_ExpiredToken_ReturnsError(t *testing.T) {
+func Test_GetClaim_ExpiredToken_Returns_Error(t *testing.T) {
 
 	os.Setenv(services.GO_BOOKING_API_SECRET, "E59DD115760893782F7FB8CC6C387DE86FFEC3C186A8EFE24184E9CABDB2EFC3")
 	expiredToken := "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJuYW1lIjoieWFjQHlhYy5jbyIsImVtYWlsIjoieWFjQHlhYy5jbyIsInVzZXIiOnRydWUsImV4cCI6MTY1MjAzMzc1MywiaWF0IjoxNjUyMDMzNzUyLCJpc3MiOiJnby1ib29raW5nLWFwaSJ9.-t_MwxN_sQ5pxG6B0X1zrtdCnefCcXfvi1byCrpDQjg"
@@ -85,11 +85,11 @@ func Test_GetClaim_ExpiredToken_ReturnsError(t *testing.T) {
 
 	actual, err := target.GetClaim(expiredToken, services.EMAIL_CLAIM)
 
-	assert.NotNil(t, err)
+	assert.Error(t, err)
 	assert.Empty(t, actual)
 }
 
-func Test_GetClaim_ValidToken_WithInValidClaimRequest_ReturnsCorrectClaim(t *testing.T) {
+func Test_GetClaim_ValidToken_WithInValidClaimRequest_Returns_Error(t *testing.T) {
 
 	os.Setenv(services.GO_BOOKING_API_SECRET, "E59DD115760893782F7FB8CC6C387DE86FFEC3C186A8EFE24184E9CABDB2EFC3")
 	target := services.GetJWTService()
@@ -102,7 +102,7 @@ func Test_GetClaim_ValidToken_WithInValidClaimRequest_ReturnsCorrectClaim(t *tes
 
 		actual, err := target.GetClaim(token, services.JwtClaimType(claim))
 
-		assert.NotNil(t, err)
+		assert.Error(t, err)
 		assert.Empty(t, actual)
 	}
 }

@@ -21,7 +21,7 @@ type mockJWTService struct {
 	mock.Mock
 }
 
-func Test_EmailExists_ReturnsTrue(t *testing.T) {
+func Test_EmailExists_Returns_True(t *testing.T) {
 
 	var db *gorm.DB
 	var setupError error
@@ -30,6 +30,7 @@ func Test_EmailExists_ReturnsTrue(t *testing.T) {
 	defer sqlDb.Close()
 
 	email := faker.Internet().Email()
+
 	sqlMock.ExpectQuery(regexp.QuoteMeta("SELECT COUNT(id) FROM users WHERE email = $1")).
 		WithArgs(email).
 		WillReturnRows(sqlmock.NewRows([]string{"count"}).
@@ -47,7 +48,7 @@ func Test_EmailExists_ReturnsTrue(t *testing.T) {
 	assert.True(t, actual)
 }
 
-func Test_EmailExists_ReturnsFalse(t *testing.T) {
+func Test_EmailExists_Returns_False(t *testing.T) {
 
 	var db *gorm.DB
 	var setupError error
@@ -56,6 +57,7 @@ func Test_EmailExists_ReturnsFalse(t *testing.T) {
 	defer sqlDb.Close()
 
 	email := faker.Internet().Email()
+
 	sqlMock.ExpectQuery(regexp.QuoteMeta("SELECT COUNT(id) FROM users WHERE email = $1")).
 		WithArgs(email).
 		WillReturnRows(sqlmock.NewRows([]string{"count"}).
@@ -73,7 +75,7 @@ func Test_EmailExists_ReturnsFalse(t *testing.T) {
 	assert.False(t, actual)
 }
 
-func Test_GetPassword_ReturnsData(t *testing.T) {
+func Test_GetPassword_Returns_Data(t *testing.T) {
 
 	var db *gorm.DB
 	var actualError error
@@ -83,6 +85,7 @@ func Test_GetPassword_ReturnsData(t *testing.T) {
 	defer sqlDb.Close()
 
 	pwd := faker.Internet().Password(9, 20)
+
 	sqlMock.ExpectQuery(regexp.QuoteMeta("SELECT password FROM users INNER JOIN credentials ON users.credential_id = credentials.id WHERE email = ")).
 		WithArgs(pwd).
 		WillReturnRows(sqlmock.NewRows([]string{"password"}).
@@ -101,7 +104,7 @@ func Test_GetPassword_ReturnsData(t *testing.T) {
 	assert.Equal(t, pwd, actual)
 }
 
-func Test_GetPassword_ReturnsError(t *testing.T) {
+func Test_GetPassword_Returns_Error(t *testing.T) {
 
 	var db *gorm.DB
 	var actualError error
@@ -110,8 +113,9 @@ func Test_GetPassword_ReturnsError(t *testing.T) {
 	sqlDb, sqlMock, _ := sqlmock.New()
 	defer sqlDb.Close()
 
-	expectedError := errors.New("mock error")
+	expectedError := errors.New("my error")
 	pwd := faker.Internet().Password(9, 20)
+
 	sqlMock.ExpectQuery(regexp.QuoteMeta("SELECT password FROM users INNER JOIN credentials ON users.credential_id = credentials.id WHERE email = ")).
 		WithArgs(pwd).
 		WillReturnError(expectedError)
@@ -126,11 +130,11 @@ func Test_GetPassword_ReturnsError(t *testing.T) {
 	actualPwd, actualError := target.GetPassword(pwd)
 
 	assert.Empty(t, actualPwd)
-	assert.NotNil(t, actualError)
+	assert.Error(t, actualError)
 	assert.Equal(t, expectedError, actualError)
 }
 
-func Test_GetByEmail_ReturnsUser(t *testing.T) {
+func Test_GetByEmail_Returns_User(t *testing.T) {
 
 	var db *gorm.DB
 	var setupError error
@@ -138,9 +142,10 @@ func Test_GetByEmail_ReturnsUser(t *testing.T) {
 
 	sqlDb, sqlMock, _ := sqlmock.New()
 	defer sqlDb.Close()
-	utcNow := time.Now().UTC()
 
+	utcNow := time.Now().UTC()
 	email := faker.Internet().Email()
+
 	sqlMock.ExpectQuery(regexp.QuoteMeta(`SELECT * FROM "users" WHERE email = $1 AND "users"."deleted_at" IS NULL ORDER BY "users"."id" LIMIT 1`)).
 		WithArgs(email).
 		WillReturnRows(sqlmock.NewRows([]string{"id", "created_at", "updated_at", "deleted_at", "first_name", "last_name", "email", "credential_id"}).
@@ -159,14 +164,15 @@ func Test_GetByEmail_ReturnsUser(t *testing.T) {
 	assert.NotNil(t, actualUser)
 }
 
-func Test_GetByEmail_ReturnsError(t *testing.T) {
+func Test_GetByEmail_Returns_Error(t *testing.T) {
 
 	var db *gorm.DB
 	var setupError error
-	expectedError := errors.New("Mock error")
+	expectedError := errors.New("my error")
 
 	sqlDb, sqlMock, _ := sqlmock.New()
 	defer sqlDb.Close()
+
 	email := faker.Internet().Email()
 	sqlMock.ExpectQuery(regexp.QuoteMeta(`SELECT * FROM "users" WHERE email = $1 AND "users"."deleted_at" IS NULL ORDER BY "users"."id" LIMIT 1`)).
 		WithArgs(email).
@@ -181,11 +187,11 @@ func Test_GetByEmail_ReturnsError(t *testing.T) {
 	actualUser, actualError := target.GetByEmail(email)
 
 	assert.Equal(t, expectedError, actualError)
-	assert.NotNil(t, actualError)
+	assert.Error(t, actualError)
 	assert.Nil(t, actualUser)
 }
 
-func Test_GetByToken_ReturnsUser(t *testing.T) {
+func Test_GetByToken_Returns_User(t *testing.T) {
 
 	var db *gorm.DB
 	var setupError error
@@ -198,8 +204,8 @@ func Test_GetByToken_ReturnsUser(t *testing.T) {
 	utcNow := time.Now().UTC()
 	token := faker.RandomString(20)
 	email := faker.Internet().Email()
-
 	jwts.On("GetClaim", token, services.EMAIL_CLAIM).Return(email, nil)
+
 	sqlMock.ExpectQuery(regexp.QuoteMeta(`SELECT * FROM "users" WHERE email = $1 AND "users"."deleted_at" IS NULL ORDER BY "users"."id" LIMIT 1`)).
 		WithArgs(email).
 		WillReturnRows(sqlmock.NewRows([]string{"id", "created_at", "updated_at", "deleted_at", "first_name", "last_name", "email", "credential_id"}).
@@ -218,7 +224,7 @@ func Test_GetByToken_ReturnsUser(t *testing.T) {
 	assert.NotNil(t, actualUser)
 }
 
-func Test_GetByToken_ReturnsError(t *testing.T) {
+func Test_GetByToken_Returns_Error(t *testing.T) {
 
 	var db *gorm.DB
 	var setupError error
@@ -230,10 +236,10 @@ func Test_GetByToken_ReturnsError(t *testing.T) {
 	var jwts = newMockJWTService(t)
 	utcNow := time.Now().UTC()
 	token := faker.RandomString(20)
-	var expectedError error = errors.New("Mock error")
+	expectedError := errors.New("my error")
 	email := ""
-
 	jwts.On("GetClaim", token, services.EMAIL_CLAIM).Return(email, expectedError)
+
 	sqlMock.ExpectQuery(regexp.QuoteMeta(`SELECT * FROM "users" WHERE email = $1 AND "users"."deleted_at" IS NULL ORDER BY "users"."id" LIMIT 1`)).
 		WithArgs(email).
 		WillReturnRows(sqlmock.NewRows([]string{"id", "created_at", "updated_at", "deleted_at", "first_name", "last_name", "email", "credential_id"}).
@@ -249,7 +255,7 @@ func Test_GetByToken_ReturnsError(t *testing.T) {
 	actualUser, actualError := target.GetByToken(token, jwts)
 
 	assert.Equal(t, expectedError, actualError)
-	assert.NotNil(t, actualError)
+	assert.Error(t, actualError)
 	assert.Nil(t, actualUser)
 }
 
