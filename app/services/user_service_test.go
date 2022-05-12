@@ -1,8 +1,7 @@
-package tests
+package services
 
 import (
 	"errors"
-	"go-booking-api/app/services"
 	"regexp"
 	"strconv"
 	"testing"
@@ -41,7 +40,7 @@ func Test_EmailExists_Returns_True(t *testing.T) {
 	}), &gorm.Config{})
 
 	assert.Nil(t, setupError)
-	target := services.GetUserService(db)
+	target := GetUserService(db)
 
 	actual := target.EmailExists(email)
 
@@ -68,7 +67,7 @@ func Test_EmailExists_Returns_False(t *testing.T) {
 	}), &gorm.Config{})
 
 	assert.Nil(t, setupError)
-	target := services.GetUserService(db)
+	target := GetUserService(db)
 
 	actual := target.EmailExists(email)
 
@@ -96,7 +95,7 @@ func Test_GetPassword_Returns_Data(t *testing.T) {
 	}), &gorm.Config{})
 
 	assert.Nil(t, setupError)
-	target := services.GetUserService(db)
+	target := GetUserService(db)
 
 	actual, actualError := target.GetPassword(pwd)
 
@@ -125,7 +124,7 @@ func Test_GetPassword_Returns_Error(t *testing.T) {
 	}), &gorm.Config{})
 
 	assert.Nil(t, setupError)
-	target := services.GetUserService(db)
+	target := GetUserService(db)
 
 	actualPwd, actualError := target.GetPassword(pwd)
 
@@ -156,7 +155,7 @@ func Test_GetByEmail_Returns_User(t *testing.T) {
 	}), &gorm.Config{})
 
 	assert.Nil(t, setupError)
-	target := services.GetUserService(db)
+	target := GetUserService(db)
 
 	actualUser, actualError := target.GetByEmail(email)
 
@@ -182,7 +181,7 @@ func Test_GetByEmail_Returns_Error(t *testing.T) {
 	}), &gorm.Config{})
 
 	assert.Nil(t, setupError)
-	target := services.GetUserService(db)
+	target := GetUserService(db)
 
 	actualUser, actualError := target.GetByEmail(email)
 
@@ -204,7 +203,7 @@ func Test_GetByToken_Returns_User(t *testing.T) {
 	utcNow := time.Now().UTC()
 	token := faker.RandomString(20)
 	email := faker.Internet().Email()
-	jwts.On("GetClaim", token, services.EMAIL_CLAIM).Return(email, nil)
+	jwts.On("GetClaim", token, EMAIL_CLAIM).Return(email, nil)
 
 	sqlMock.ExpectQuery(regexp.QuoteMeta(`SELECT * FROM "users" WHERE email = $1 AND "users"."deleted_at" IS NULL ORDER BY "users"."id" LIMIT 1`)).
 		WithArgs(email).
@@ -216,7 +215,7 @@ func Test_GetByToken_Returns_User(t *testing.T) {
 	}), &gorm.Config{})
 
 	assert.Nil(t, setupError)
-	target := services.GetUserService(db)
+	target := GetUserService(db)
 
 	actualUser, actualError := target.GetByToken(token, jwts)
 
@@ -238,7 +237,7 @@ func Test_GetByToken_Returns_Error(t *testing.T) {
 	token := faker.RandomString(20)
 	expectedError := errors.New("my error")
 	email := ""
-	jwts.On("GetClaim", token, services.EMAIL_CLAIM).Return(email, expectedError)
+	jwts.On("GetClaim", token, EMAIL_CLAIM).Return(email, expectedError)
 
 	sqlMock.ExpectQuery(regexp.QuoteMeta(`SELECT * FROM "users" WHERE email = $1 AND "users"."deleted_at" IS NULL ORDER BY "users"."id" LIMIT 1`)).
 		WithArgs(email).
@@ -250,7 +249,7 @@ func Test_GetByToken_Returns_Error(t *testing.T) {
 	}), &gorm.Config{})
 
 	assert.Nil(t, setupError)
-	target := services.GetUserService(db)
+	target := GetUserService(db)
 
 	actualUser, actualError := target.GetByToken(token, jwts)
 
@@ -259,18 +258,18 @@ func Test_GetByToken_Returns_Error(t *testing.T) {
 	assert.Nil(t, actualUser)
 }
 
-func (m *mockJWTService) GetClaim(token string, claimType services.JwtClaimType) (string, error) {
+func (m *mockJWTService) GetClaim(token string, claimType JwtClaimType) (string, error) {
 	ret := m.Called(token, claimType)
 
 	var r0 string
-	if rf, ok := ret.Get(0).(func(string, services.JwtClaimType) string); ok {
+	if rf, ok := ret.Get(0).(func(string, JwtClaimType) string); ok {
 		r0 = rf(token, claimType)
 	} else {
 		r0 = ret.Get(0).(string)
 	}
 
 	var r1 error
-	if rf, ok := ret.Get(1).(func(string, services.JwtClaimType) error); ok {
+	if rf, ok := ret.Get(1).(func(string, JwtClaimType) error); ok {
 		r1 = rf(token, claimType)
 	} else {
 		r1 = ret.Error(1)

@@ -1,8 +1,7 @@
-package tests
+package services
 
 import (
 	"go-booking-api/app/models/requests"
-	"go-booking-api/app/services"
 	"testing"
 
 	"github.com/revel/revel"
@@ -12,7 +11,7 @@ import (
 
 func Test_ValidateLoginRequest_InValidEmail_Returns_Error(t *testing.T) {
 
-	target := services.GetValidationService()
+	target := GetValidationService()
 	rv := createValidation()
 	requests := []requests.LoginRequest{
 		{Email: "faker.Internet().Email()", Password: faker.Internet().Password(4, 20)},
@@ -31,7 +30,7 @@ func Test_ValidateLoginRequest_InValidEmail_Returns_Error(t *testing.T) {
 
 func Test_ValidateLoginRequest_ValidEmail_Returns_NoError(t *testing.T) {
 
-	target := services.GetValidationService()
+	target := GetValidationService()
 	rv := createValidation()
 	requests := []requests.LoginRequest{
 		{Email: faker.Internet().Email(), Password: faker.Internet().Password(4, 20)},
@@ -49,7 +48,7 @@ func Test_ValidateLoginRequest_ValidEmail_Returns_NoError(t *testing.T) {
 
 func Test_ValidateLoginRequest_InValidPassword_Returns_Error(t *testing.T) {
 
-	target := services.GetValidationService()
+	target := GetValidationService()
 	rv := createValidation()
 	requests := []requests.LoginRequest{
 		{Email: faker.Internet().Email(), Password: faker.Internet().Password(0, 0)},
@@ -62,13 +61,13 @@ func Test_ValidateLoginRequest_InValidPassword_Returns_Error(t *testing.T) {
 		target.ValidateLoginRequest(rv, &request)
 
 		assert.True(t, rv.HasErrors())
-		assert.Equal(t, services.VALIDATION_REQUEST_PASSWORD_LENGTH, rv.Errors[i].Message)
+		assert.Equal(t, VALIDATION_REQUEST_PASSWORD_LENGTH, rv.Errors[i].Message)
 	}
 }
 
 func Test_ValidateLoginRequest_ValidPassword_Returns_NoError(t *testing.T) {
 
-	target := services.GetValidationService()
+	target := GetValidationService()
 	rv := createValidation()
 	requests := []requests.LoginRequest{
 		{Email: faker.Internet().Email(), Password: faker.Internet().Password(4, 4)},
@@ -87,7 +86,7 @@ func Test_ValidateLoginRequest_ValidPassword_Returns_NoError(t *testing.T) {
 
 func Test_ValidateRegisterRequest_InValidFirstName_Returns_Error(t *testing.T) {
 
-	target := services.GetValidationService()
+	target := GetValidationService()
 	rv := createValidation()
 	pwd := faker.Internet().Password(4, 20)
 	request := requests.RegisterRequest{
@@ -101,12 +100,12 @@ func Test_ValidateRegisterRequest_InValidFirstName_Returns_Error(t *testing.T) {
 	target.ValidateRegisterRequest(rv, &request)
 
 	assert.True(t, rv.HasErrors())
-	assert.Equal(t, services.VALIDATION_REGISTER_REQUEST_FIRSTNAME_INVALID, rv.Errors[0].Message)
+	assert.Equal(t, VALIDATION_REGISTER_REQUEST_FIRSTNAME_INVALID, rv.Errors[0].Message)
 }
 
 func Test_ValidateRegisterRequest_InValidLastName_Returns_Error(t *testing.T) {
 
-	target := services.GetValidationService()
+	target := GetValidationService()
 	rv := createValidation()
 	pwd := faker.Internet().Password(4, 20)
 	request := requests.RegisterRequest{
@@ -120,12 +119,12 @@ func Test_ValidateRegisterRequest_InValidLastName_Returns_Error(t *testing.T) {
 	target.ValidateRegisterRequest(rv, &request)
 
 	assert.True(t, rv.HasErrors())
-	assert.Equal(t, services.VALIDATION_REGISTER_REQUEST_LASTNAME_INVALID, rv.Errors[0].Message)
+	assert.Equal(t, VALIDATION_REGISTER_REQUEST_LASTNAME_INVALID, rv.Errors[0].Message)
 }
 
 func Test_ValidateRegisterRequest_InValidEmail_Returns_Error(t *testing.T) {
 
-	target := services.GetValidationService()
+	target := GetValidationService()
 	rv := createValidation()
 	pwd := faker.Internet().Password(4, 20)
 	firstName := faker.Name().FirstName()
@@ -147,7 +146,7 @@ func Test_ValidateRegisterRequest_InValidEmail_Returns_Error(t *testing.T) {
 
 func Test_ValidateRegisterRequest_InValidPassword_Returns_Error(t *testing.T) {
 
-	target := services.GetValidationService()
+	target := GetValidationService()
 	rv := createValidation()
 	email := faker.Internet().Email()
 	pwd1 := faker.Internet().Password(0, 0)
@@ -167,13 +166,13 @@ func Test_ValidateRegisterRequest_InValidPassword_Returns_Error(t *testing.T) {
 		target.ValidateRegisterRequest(rv, &request)
 
 		assert.True(t, rv.HasErrors())
-		assert.Equal(t, services.VALIDATION_REQUEST_PASSWORD_LENGTH, rv.Errors[i].Message)
+		assert.Equal(t, VALIDATION_REQUEST_PASSWORD_LENGTH, rv.Errors[i].Message)
 	}
 }
 
 func Test_ValidateRegisterRequest_NonMatchingPasswords_Returns_Error(t *testing.T) {
 
-	target := services.GetValidationService()
+	target := GetValidationService()
 	rv := createValidation()
 	email := faker.Internet().Email()
 	pwd := faker.Internet().Password(4, 6)
@@ -194,24 +193,24 @@ func Test_ValidateRegisterRequest_NonMatchingPasswords_Returns_Error(t *testing.
 		target.ValidateRegisterRequest(rv, &request)
 
 		assert.True(t, rv.HasErrors())
-		assert.Equal(t, services.VALIDATION_REGISTER_REQUEST_PASSWORD_NOMATCH, rv.Errors[i].Message)
+		assert.Equal(t, VALIDATION_REGISTER_REQUEST_PASSWORD_NOMATCH, rv.Errors[i].Message)
 	}
 }
 
 func Test_ValidateBookingRequest_InValidNumber_Returns_Error(t *testing.T) {
 
-	target := services.GetValidationService()
+	target := GetValidationService()
 	rv := createValidation()
 
 	target.ValidateBookingRequest(rv, 0)
 
 	assert.True(t, rv.HasErrors())
-	assert.Equal(t, services.VALIDATION_BOOKING_REQUEST_VALID_NUMBER, rv.Errors[0].Message)
+	assert.Equal(t, VALIDATION_BOOKING_REQUEST_VALID_NUMBER, rv.Errors[0].Message)
 }
 
 func Test_ValidateBookingRequest_ValidNumber_Returns_NoError(t *testing.T) {
 
-	target := services.GetValidationService()
+	target := GetValidationService()
 	rv := createValidation()
 
 	target.ValidateBookingRequest(rv, uint(faker.RandomInt(1, 1000)))

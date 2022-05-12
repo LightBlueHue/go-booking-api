@@ -1,8 +1,7 @@
-package tests
+package services
 
 import (
 	"errors"
-	"go-booking-api/app/services"
 	"regexp"
 	"testing"
 
@@ -34,7 +33,7 @@ func Test_Book_Returns_BookingId(t *testing.T) {
 	}), &gorm.Config{})
 
 	assert.Nil(t, setupError)
-	target := services.GetBookingService(db)
+	target := GetBookingService(db)
 
 	actualBookingId, actualError := target.Book(userId, count)
 
@@ -62,7 +61,7 @@ func Test_Book_WhenDbError_Returns_Error(t *testing.T) {
 	}), &gorm.Config{})
 
 	assert.Nil(t, setupError)
-	target := services.GetBookingService(db)
+	target := GetBookingService(db)
 
 	actualBookingId, actualError := target.Book(userId, count)
 
@@ -91,7 +90,7 @@ func Test_Book_WhenDbBookingIdZero_Returns_Error(t *testing.T) {
 	}), &gorm.Config{})
 
 	assert.Nil(t, setupError)
-	target := services.GetBookingService(db)
+	target := GetBookingService(db)
 
 	actualBookingId, actualError := target.Book(userId, count)
 
