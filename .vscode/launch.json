@@ -9,7 +9,7 @@
             "type": "go",
             "request": "launch",
             "mode": "debug",
-            "remotePath": "",
+            "preLaunchTask": "build",
             "program": "${workspaceRoot}/app/tmp/",
             "env": {},
             "showLog": true,
