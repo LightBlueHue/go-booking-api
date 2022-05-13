@@ -6,7 +6,7 @@
         {
             "label": "build",
             "type": "shell",
-            "command": "revel build -v ${workspaceRoot}/... ${workspaceRoot}/app/tmp/"
+            "command": "revel build ${workspaceRoot}/... ${workspaceRoot}/app/build/"
         }
     ]
 }
