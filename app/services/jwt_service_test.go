@@ -105,3 +105,21 @@ func Test_GetClaim_ValidToken_WithInValidClaimRequest_Returns_Error(t *testing.T
 		assert.Empty(t, actual)
 	}
 }
+
+func Test_getSecretKey_WhenSetInEnvironmentVariable_Returns_CorrectData(t *testing.T) {
+
+	expectedSecrets := []string{"E59DD115760893782F7FB8CC6C387DE86FFEC3C186A8EFE24184E9CABDB2EFC3", " "}
+
+	for _, expectedSecret := range expectedSecrets {
+
+		os.Setenv(GO_BOOKING_API_SECRET, expectedSecret)
+		actualSecret := getSecretKey()
+		assert.Equal(t, expectedSecret, actualSecret)
+	}
+}
+
+func Test_getSecretKey_WhenEnvironmentVariableEmpty_Panics(t *testing.T) {
+
+	os.Setenv(GO_BOOKING_API_SECRET, "")
+	assert.PanicsWithValue(t, GO_BOOKING_API_SECRET, func() { getSecretKey() })
+}
