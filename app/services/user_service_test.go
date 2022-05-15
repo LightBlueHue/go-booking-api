@@ -2,6 +2,7 @@ package services
 
 import (
 	"errors"
+	"go-booking-api/app/models"
 	"regexp"
 	"strconv"
 	"testing"
@@ -256,6 +257,67 @@ func Test_GetByToken_Returns_Error(t *testing.T) {
 	assert.Equal(t, expectedError, actualError)
 	assert.Error(t, actualError)
 	assert.Nil(t, actualUser)
+}
+
+func Test_Save_Returns_NoError(t *testing.T) {
+
+	var db *gorm.DB
+	var setupError error
+
+	sqlDb, sqlMock, _ := sqlmock.New()
+	defer sqlDb.Close()
+
+	user := &models.User{FirstName: "yac", LastName: "yaccadamia", CredentialID: 1}
+	itIsAny := sqlmock.AnyArg()
+
+	sqlMock.ExpectBegin()
+	sqlMock.ExpectQuery(regexp.QuoteMeta(`INSERT INTO "users" ("created_at","updated_at","deleted_at","first_name","last_name","email","credential_id") VALUES ($1,$2,$3,$4,$5,$6,$7) RETURNING "id"`)).
+		WithArgs(itIsAny, itIsAny, itIsAny, itIsAny, itIsAny, itIsAny, itIsAny).
+		WillReturnRows(sqlmock.NewRows([]string{"id"}).
+			AddRow("1"))
+	sqlMock.ExpectCommit()
+
+	db, setupError = gorm.Open(postgres.New(postgres.Config{
+		Conn: sqlDb,
+	}), &gorm.Config{})
+
+	assert.Nil(t, setupError)
+	target := GetUserService(db)
+
+	actualError := target.Save(user)
+
+	assert.Nil(t, actualError)
+}
+
+func Test_Save_Returns_Error(t *testing.T) {
+
+	var db *gorm.DB
+	var setupError error
+
+	sqlDb, sqlMock, _ := sqlmock.New()
+	defer sqlDb.Close()
+
+	user := &models.User{FirstName: "yac", LastName: "yaccadamia", CredentialID: 1}
+	itIsAny := sqlmock.AnyArg()
+	expectedError := errors.New("my error")
+
+	sqlMock.ExpectBegin()
+	sqlMock.ExpectQuery(regexp.QuoteMeta(`INSERT INTO "users" ("created_at","updated_at","deleted_at","first_name","last_name","email","credential_id") VALUES ($1,$2,$3,$4,$5,$6,$7) RETURNING "id"`)).
+		WithArgs(itIsAny, itIsAny, itIsAny, itIsAny, itIsAny, itIsAny, itIsAny).
+		WillReturnError(expectedError)
+	sqlMock.ExpectRollback()
+
+	db, setupError = gorm.Open(postgres.New(postgres.Config{
+		Conn: sqlDb,
+	}), &gorm.Config{})
+
+	assert.Nil(t, setupError)
+	target := GetUserService(db)
+
+	actualError := target.Save(user)
+
+	assert.Error(t, actualError)
+	assert.Equal(t, expectedError, actualError)
 }
 
 func (m *mockJWTService) GetClaim(token string, claimType JwtClaimType) (string, error) {
