@@ -3,16 +3,20 @@
 
 A high-productivity web framework for the [Go language](http://www.golang.org/).
 
-### Create new app:
-revel new -a go-booking-api -r
+## Run this command before debugging:
+
+        revel run
+    
+    Wait until the following is displayed: Revel engine is listening on.. localhost
+    Press ctrl+C, then click Debug Revel in the debug pane
 
 ### Start the web server:
 
-   revel run go-booking-api
+        revel run go-booking-api
 
 ### Go to http://localhost:9000/ and you'll see:
 
-    "It works"
+    "GO-booking-API is uP!"
 
 ## Code Layout
 
@@ -78,3 +82,6 @@ or type
 * [c# params equivalent](https://go.dev/ref/spec#Passing_arguments_to_..._parameters)
 * https://pkg.go.dev/syreclabs.com/go/faker#readme-name
 
+
+### Create new app:
+        revel new -a go-booking-api -r
