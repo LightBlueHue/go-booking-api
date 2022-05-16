@@ -67,7 +67,7 @@ func Test_Book_WhenDbError_Returns_Error(t *testing.T) {
 	actualBookingId, actualError := target.Book(userId, count)
 
 	assert.Empty(t, actualBookingId)
-	assert.Equal(t, expectedError.Error(), actualError.Error())
+	assert.Equal(t, expectedError, actualError)
 }
 
 func Test_Book_WhenDbBookingIdZero_Returns_Error(t *testing.T) {
