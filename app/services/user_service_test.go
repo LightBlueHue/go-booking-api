@@ -31,9 +31,9 @@ func Test_EmailExists_Returns_True(t *testing.T) {
 
 	email := faker.Internet().Email()
 
-	sqlMock.ExpectQuery(regexp.QuoteMeta("SELECT COUNT(id) FROM users WHERE email = $1")).
+	sqlMock.ExpectQuery(regexp.QuoteMeta("")).
 		WithArgs(email).
-		WillReturnRows(sqlmock.NewRows([]string{"count"}).
+		WillReturnRows(sqlmock.NewRows([]string{""}).
 			AddRow(strconv.Itoa(1)))
 
 	db, setupError = gorm.Open(postgres.New(postgres.Config{
@@ -55,17 +55,16 @@ func Test_EmailExists_Returns_False(t *testing.T) {
 
 	sqlDb, sqlMock, _ := sqlmock.New()
 	defer sqlDb.Close()
-
-	email := faker.Internet().Email()
-
-	sqlMock.ExpectQuery(regexp.QuoteMeta("SELECT COUNT(id) FROM users WHERE email = $1")).
-		WithArgs(email).
-		WillReturnRows(sqlmock.NewRows([]string{"count"}).
-			AddRow(strconv.Itoa(0)))
-
 	db, setupError = gorm.Open(postgres.New(postgres.Config{
 		Conn: sqlDb,
 	}), &gorm.Config{})
+
+	email := faker.Internet().Email()
+
+	sqlMock.ExpectQuery(regexp.QuoteMeta("")).
+		WithArgs(email).
+		WillReturnRows(sqlmock.NewRows([]string{""}).
+			AddRow(strconv.Itoa(0)))
 
 	assert.Nil(t, setupError)
 	target := GetUserService(db)
@@ -83,17 +82,16 @@ func Test_GetPassword_Returns_Data(t *testing.T) {
 
 	sqlDb, sqlMock, _ := sqlmock.New()
 	defer sqlDb.Close()
-
-	pwd := faker.Internet().Password(9, 20)
-
-	sqlMock.ExpectQuery(regexp.QuoteMeta("SELECT password FROM users INNER JOIN credentials ON users.credential_id = credentials.id WHERE email = ")).
-		WithArgs(pwd).
-		WillReturnRows(sqlmock.NewRows([]string{"password"}).
-			AddRow(pwd))
-
 	db, setupError = gorm.Open(postgres.New(postgres.Config{
 		Conn: sqlDb,
 	}), &gorm.Config{})
+
+	pwd := faker.Internet().Password(9, 20)
+
+	sqlMock.ExpectQuery(regexp.QuoteMeta("")).
+		WithArgs(pwd).
+		WillReturnRows(sqlmock.NewRows([]string{""}).
+			AddRow(pwd))
 
 	assert.Nil(t, setupError)
 	target := GetUserService(db)
@@ -112,17 +110,16 @@ func Test_GetPassword_Returns_Error(t *testing.T) {
 
 	sqlDb, sqlMock, _ := sqlmock.New()
 	defer sqlDb.Close()
+	db, setupError = gorm.Open(postgres.New(postgres.Config{
+		Conn: sqlDb,
+	}), &gorm.Config{})
 
 	expectedError := errors.New("my error")
 	pwd := faker.Internet().Password(9, 20)
 
-	sqlMock.ExpectQuery(regexp.QuoteMeta("SELECT password FROM users INNER JOIN credentials ON users.credential_id = credentials.id WHERE email = ")).
+	sqlMock.ExpectQuery(regexp.QuoteMeta("")).
 		WithArgs(pwd).
 		WillReturnError(expectedError)
-
-	db, setupError = gorm.Open(postgres.New(postgres.Config{
-		Conn: sqlDb,
-	}), &gorm.Config{})
 
 	assert.Nil(t, setupError)
 	target := GetUserService(db)
@@ -146,7 +143,7 @@ func Test_GetByEmail_Returns_User(t *testing.T) {
 	utcNow := time.Now().UTC()
 	email := faker.Internet().Email()
 
-	sqlMock.ExpectQuery(regexp.QuoteMeta(`SELECT * FROM "users" WHERE email = $1 AND "users"."deleted_at" IS NULL ORDER BY "users"."id" LIMIT 1`)).
+	sqlMock.ExpectQuery(regexp.QuoteMeta("")).
 		WithArgs(email).
 		WillReturnRows(sqlmock.NewRows([]string{"id", "created_at", "updated_at", "deleted_at", "first_name", "last_name", "email", "credential_id"}).
 			AddRow("1", utcNow, utcNow, defaultTime, "yac", "yaccadamia", "yac@yac.co", "1"))
@@ -172,14 +169,14 @@ func Test_GetByEmail_Returns_Error(t *testing.T) {
 
 	sqlDb, sqlMock, _ := sqlmock.New()
 	defer sqlDb.Close()
-
-	email := faker.Internet().Email()
-	sqlMock.ExpectQuery(regexp.QuoteMeta(`SELECT * FROM "users" WHERE email = $1 AND "users"."deleted_at" IS NULL ORDER BY "users"."id" LIMIT 1`)).
-		WithArgs(email).
-		WillReturnError(expectedError)
 	db, setupError = gorm.Open(postgres.New(postgres.Config{
 		Conn: sqlDb,
 	}), &gorm.Config{})
+
+	email := faker.Internet().Email()
+	sqlMock.ExpectQuery(regexp.QuoteMeta("")).
+		WithArgs(email).
+		WillReturnError(expectedError)
 
 	assert.Nil(t, setupError)
 	target := GetUserService(db)
@@ -199,6 +196,9 @@ func Test_GetByToken_Returns_User(t *testing.T) {
 
 	sqlDb, sqlMock, _ := sqlmock.New()
 	defer sqlDb.Close()
+	db, setupError = gorm.Open(postgres.New(postgres.Config{
+		Conn: sqlDb,
+	}), &gorm.Config{})
 
 	var jwts = newMockJWTService(t)
 	utcNow := time.Now().UTC()
@@ -206,14 +206,10 @@ func Test_GetByToken_Returns_User(t *testing.T) {
 	email := faker.Internet().Email()
 	jwts.On("GetClaim", token, EMAIL_CLAIM).Return(email, nil)
 
-	sqlMock.ExpectQuery(regexp.QuoteMeta(`SELECT * FROM "users" WHERE email = $1 AND "users"."deleted_at" IS NULL ORDER BY "users"."id" LIMIT 1`)).
+	sqlMock.ExpectQuery(regexp.QuoteMeta("")).
 		WithArgs(email).
 		WillReturnRows(sqlmock.NewRows([]string{"id", "created_at", "updated_at", "deleted_at", "first_name", "last_name", "email", "credential_id"}).
 			AddRow("1", utcNow, utcNow, defaultTime, "yac", "yaccadamia", "yac@yac.co", "1"))
-
-	db, setupError = gorm.Open(postgres.New(postgres.Config{
-		Conn: sqlDb,
-	}), &gorm.Config{})
 
 	assert.Nil(t, setupError)
 	target := GetUserService(db)
@@ -232,6 +228,9 @@ func Test_GetByToken_Returns_Error(t *testing.T) {
 
 	sqlDb, sqlMock, _ := sqlmock.New()
 	defer sqlDb.Close()
+	db, setupError = gorm.Open(postgres.New(postgres.Config{
+		Conn: sqlDb,
+	}), &gorm.Config{})
 
 	var jwts = newMockJWTService(t)
 	utcNow := time.Now().UTC()
@@ -240,14 +239,10 @@ func Test_GetByToken_Returns_Error(t *testing.T) {
 	email := ""
 	jwts.On("GetClaim", token, EMAIL_CLAIM).Return(email, expectedError)
 
-	sqlMock.ExpectQuery(regexp.QuoteMeta(`SELECT * FROM "users" WHERE email = $1 AND "users"."deleted_at" IS NULL ORDER BY "users"."id" LIMIT 1`)).
+	sqlMock.ExpectQuery(regexp.QuoteMeta("")).
 		WithArgs(email).
 		WillReturnRows(sqlmock.NewRows([]string{"id", "created_at", "updated_at", "deleted_at", "first_name", "last_name", "email", "credential_id"}).
 			AddRow("1", utcNow, utcNow, defaultTime, "yac", "yaccadamia", "yac@yac.co", "1"))
-
-	db, setupError = gorm.Open(postgres.New(postgres.Config{
-		Conn: sqlDb,
-	}), &gorm.Config{})
 
 	assert.Nil(t, setupError)
 	target := GetUserService(db)
@@ -266,20 +261,19 @@ func Test_Save_Returns_NoError(t *testing.T) {
 
 	sqlDb, sqlMock, _ := sqlmock.New()
 	defer sqlDb.Close()
+	db, setupError = gorm.Open(postgres.New(postgres.Config{
+		Conn: sqlDb,
+	}), &gorm.Config{})
 
 	user := &models.User{FirstName: "yac", LastName: "yaccadamia", CredentialID: 1}
 	itIsAny := sqlmock.AnyArg()
 
 	sqlMock.ExpectBegin()
-	sqlMock.ExpectQuery(regexp.QuoteMeta(`INSERT INTO "users" ("created_at","updated_at","deleted_at","first_name","last_name","email","credential_id") VALUES ($1,$2,$3,$4,$5,$6,$7) RETURNING "id"`)).
+	sqlMock.ExpectQuery(regexp.QuoteMeta("")).
 		WithArgs(itIsAny, itIsAny, itIsAny, itIsAny, itIsAny, itIsAny, itIsAny).
 		WillReturnRows(sqlmock.NewRows([]string{"id"}).
 			AddRow("1"))
 	sqlMock.ExpectCommit()
-
-	db, setupError = gorm.Open(postgres.New(postgres.Config{
-		Conn: sqlDb,
-	}), &gorm.Config{})
 
 	assert.Nil(t, setupError)
 	target := GetUserService(db)
@@ -296,20 +290,19 @@ func Test_Save_Returns_Error(t *testing.T) {
 
 	sqlDb, sqlMock, _ := sqlmock.New()
 	defer sqlDb.Close()
+	db, setupError = gorm.Open(postgres.New(postgres.Config{
+		Conn: sqlDb,
+	}), &gorm.Config{})
 
 	user := &models.User{FirstName: "yac", LastName: "yaccadamia", CredentialID: 1}
 	itIsAny := sqlmock.AnyArg()
 	expectedError := errors.New("my error")
 
 	sqlMock.ExpectBegin()
-	sqlMock.ExpectQuery(regexp.QuoteMeta(`INSERT INTO "users" ("created_at","updated_at","deleted_at","first_name","last_name","email","credential_id") VALUES ($1,$2,$3,$4,$5,$6,$7) RETURNING "id"`)).
+	sqlMock.ExpectQuery(regexp.QuoteMeta("")).
 		WithArgs(itIsAny, itIsAny, itIsAny, itIsAny, itIsAny, itIsAny, itIsAny).
 		WillReturnError(expectedError)
 	sqlMock.ExpectRollback()
-
-	db, setupError = gorm.Open(postgres.New(postgres.Config{
-		Conn: sqlDb,
-	}), &gorm.Config{})
 
 	assert.Nil(t, setupError)
 	target := GetUserService(db)
