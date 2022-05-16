@@ -2,6 +2,7 @@ package services
 
 import (
 	"go-booking-api/app/models/requests"
+	"os"
 	"testing"
 
 	"github.com/revel/revel"
@@ -146,6 +147,7 @@ func Test_ValidateRegisterRequest_InValidEmail_Returns_Error(t *testing.T) {
 
 func Test_ValidateRegisterRequest_InValidPassword_Returns_Error(t *testing.T) {
 
+	os.Setenv(GO_BOOKING_API_SECRET, "E59DD115760893782F7FB8CC6C387DE86FFEC3C186A8EFE24184E9CABDB2EFC3")
 	target := GetValidationService()
 	rv := createValidation()
 	email := faker.Internet().Email()
