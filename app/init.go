@@ -60,33 +60,36 @@ var HeaderFilter = func(c *revel.Controller, fc []revel.Filter) {
 
 var ServicesFilter = func(c *revel.Controller, fc []revel.Filter) {
 
-	initDB()
-	ds, hs, jwts, rs, us, vs, bs := GetServices()
-	if ac, ok := c.AppController.(*controllers.AccountController); ok {
+	if db == nil {
+		
+		initDB()
+		ds, hs, jwts, rs, us, vs, bs := GetServices()
+		if ac, ok := c.AppController.(*controllers.AccountController); ok {
 
-		ac.Service = services.Service{
+			ac.Service = services.Service{
 
-			DBService:         ds,
-			HashService:       hs,
-			JWTService:        jwts,
-			ResponseService:   rs,
-			UserService:       us,
-			ValidationService: vs,
-			BookingService:    bs,
+				DBService:         ds,
+				HashService:       hs,
+				JWTService:        jwts,
+				ResponseService:   rs,
+				UserService:       us,
+				ValidationService: vs,
+				BookingService:    bs,
+			}
 		}
-	}
 
-	if bc, ok := c.AppController.(*controllers.BookingController); ok {
+		if bc, ok := c.AppController.(*controllers.BookingController); ok {
 
-		bc.Service = services.Service{
+			bc.Service = services.Service{
 
-			DBService:         ds,
-			HashService:       hs,
-			JWTService:        jwts,
-			ResponseService:   rs,
-			UserService:       us,
-			ValidationService: vs,
-			BookingService:    bs,
+				DBService:         ds,
+				HashService:       hs,
+				JWTService:        jwts,
+				ResponseService:   rs,
+				UserService:       us,
+				ValidationService: vs,
+				BookingService:    bs,
+			}
 		}
 	}
 
