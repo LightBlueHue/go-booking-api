@@ -50,19 +50,19 @@ func Test_ValidateLoginRequest_ValidEmail_Returns_NoError(t *testing.T) {
 func Test_ValidateLoginRequest_InValidPassword_Returns_Error(t *testing.T) {
 
 	target := GetValidationService()
-	rv := createValidation()
 	requests := []requests.LoginRequest{
 		{Email: faker.Internet().Email(), Password: faker.Internet().Password(0, 0)},
 		{Email: faker.Internet().Email(), Password: faker.Internet().Password(0, 3)},
 		{Email: faker.Internet().FreeEmail(), Password: faker.Internet().Password(20, 30)},
 	}
 
-	for i, request := range requests {
+	for _, request := range requests {
 
+		rv := createValidation()
 		target.ValidateLoginRequest(rv, &request)
 
 		assert.True(t, rv.HasErrors())
-		assert.Equal(t, VALIDATION_REQUEST_PASSWORD_LENGTH, rv.Errors[i].Message)
+		assert.Equal(t, VALIDATION_REQUEST_PASSWORD_LENGTH, rv.Errors[0].Message)
 	}
 }
 
