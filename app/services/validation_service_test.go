@@ -2,6 +2,7 @@ package services
 
 import (
 	"go-booking-api/app/models/requests"
+	"os"
 	"testing"
 
 	"github.com/revel/revel"
@@ -49,19 +50,19 @@ func Test_ValidateLoginRequest_ValidEmail_Returns_NoError(t *testing.T) {
 func Test_ValidateLoginRequest_InValidPassword_Returns_Error(t *testing.T) {
 
 	target := GetValidationService()
-	rv := createValidation()
 	requests := []requests.LoginRequest{
 		{Email: faker.Internet().Email(), Password: faker.Internet().Password(0, 0)},
 		{Email: faker.Internet().Email(), Password: faker.Internet().Password(0, 3)},
 		{Email: faker.Internet().FreeEmail(), Password: faker.Internet().Password(20, 30)},
 	}
 
-	for i, request := range requests {
+	for _, request := range requests {
 
+		rv := createValidation()
 		target.ValidateLoginRequest(rv, &request)
 
 		assert.True(t, rv.HasErrors())
-		assert.Equal(t, VALIDATION_REQUEST_PASSWORD_LENGTH, rv.Errors[i].Message)
+		assert.Equal(t, VALIDATION_REQUEST_PASSWORD_LENGTH, rv.Errors[0].Message)
 	}
 }
 
@@ -146,6 +147,7 @@ func Test_ValidateRegisterRequest_InValidEmail_Returns_Error(t *testing.T) {
 
 func Test_ValidateRegisterRequest_InValidPassword_Returns_Error(t *testing.T) {
 
+	os.Setenv(GO_BOOKING_API_SECRET, "E59DD115760893782F7FB8CC6C387DE86FFEC3C186A8EFE24184E9CABDB2EFC3")
 	target := GetValidationService()
 	rv := createValidation()
 	email := faker.Internet().Email()

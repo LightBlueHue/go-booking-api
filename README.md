@@ -6,9 +6,9 @@ A high-productivity web framework for the [Go language](http://www.golang.org/).
 ## Run this command before debugging:
 
         revel run
-    
-    Wait until the following is displayed: Revel engine is listening on.. localhost
-    Press ctrl+C, then click Debug Revel in the debug pane
+
+Then briefly wit until the following is displayed: Revel engine is listening on.. localhost
+Press ctrl+C, then click Debug Revel in the debug pane
 
 ### Start the web server:
 
@@ -70,7 +70,7 @@ or type
 
         host.docker.internal
         
- as host when configuring pgAdmin
+as host when configuring pgAdmin
 
  ## Other helpful stuff
  
