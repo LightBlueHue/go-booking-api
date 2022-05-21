@@ -7,7 +7,7 @@ A high-productivity web framework for the [Go language](http://www.golang.org/).
 
         revel run
 
-Then briefly wit until the following is displayed: Revel engine is listening on.. localhost
+Then briefly wait until the following is displayed: Revel engine is listening on.. localhost
 Press ctrl+C, then click Debug Revel in the debug pane
 
 ### Start the web server:
