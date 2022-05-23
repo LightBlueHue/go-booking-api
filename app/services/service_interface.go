@@ -36,7 +36,7 @@ type IService interface {
 }
 
 type IDBService interface {
-	InitDB(dbInfo DbInfo, dbIntialiser DbInitialiser) *gorm.DB
+	InitDB(dbInfo DbInfo, dbIntialiser DbInitialiser, createDbStatement string) *gorm.DB
 }
 
 type (
