@@ -1,6 +1,7 @@
 package app
 
 import (
+	"fmt"
 	"go-booking-api/app/controllers"
 	"go-booking-api/app/services"
 
@@ -61,7 +62,7 @@ var HeaderFilter = func(c *revel.Controller, fc []revel.Filter) {
 var ServicesFilter = func(c *revel.Controller, fc []revel.Filter) {
 
 	if db == nil {
-		
+
 		initDB()
 		ds, hs, jwts, rs, us, vs, bs := GetServices()
 		if ac, ok := c.AppController.(*controllers.AccountController); ok {
@@ -114,7 +115,8 @@ func GetServices() (services.IDBService, services.IHashService, services.IJWTSer
 
 func initDB() {
 
-	db = services.GetDBService(db).InitDB(getDBInfo(), gorm.Open)
+	dbInfo := getDBInfo()
+	db = services.GetDBService(db).InitDB(dbInfo, gorm.Open, fmt.Sprintf(services.SQL_STATEMENT_CREATE_DB, dbInfo.DbName))
 }
 
 func getDBInfo() services.DbInfo {

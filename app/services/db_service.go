@@ -9,7 +9,7 @@ import (
 )
 
 const (
-	SQL_STATEMENT_CREATE_DB            = `CREATE DATABASE "go-booking-api" WITH OWNER = postgres ENCODING = 'UTF8' LC_COLLATE = 'en_US.utf8' LC_CTYPE = 'en_US.utf8' TABLESPACE = pg_default CONNECTION LIMIT = -1;`
+	SQL_STATEMENT_CREATE_DB            = `CREATE DATABASE "%s" WITH OWNER = postgres ENCODING = 'UTF8' LC_COLLATE = 'en_US.utf8' LC_CTYPE = 'en_US.utf8' TABLESPACE = pg_default CONNECTION LIMIT = -1;`
 	SQL_STATEMENT_CREATE_BOOK_FUNCTION = `CREATE OR REPLACE FUNCTION book(ticketsToBuy INT, userId INT)
 	RETURNS SETOF BIGINT AS
 	$body$
@@ -63,7 +63,7 @@ func GetDBService(db *gorm.DB) IDBService {
 	return &DBService{db}
 }
 
-func (s *DBService) InitDB(dbInfo DbInfo, open DbInitialiser) *gorm.DB {
+func (s *DBService) InitDB(dbInfo DbInfo, open DbInitialiser, createDbStatement string) *gorm.DB {
 
 	var dbResult *gorm.DB
 	var err error
@@ -82,13 +82,13 @@ func (s *DBService) InitDB(dbInfo DbInfo, open DbInitialiser) *gorm.DB {
 			PreferSimpleProtocol: true, // disables implicit prepared statement usage
 		}), &gorm.Config{})
 
-		if dbResult = s.db.Exec(SQL_STATEMENT_CREATE_DB); dbResult.Error != nil {
+		if dbResult = s.db.Exec(createDbStatement); dbResult.Error != nil {
 
 			panic("failed to connect database")
 		}
 
 		s.db, err = gorm.Open(postgres.New(postgres.Config{
-			DSN:                  "user=postgres password=postgres dbname=go-booking-api port=5432 sslmode=disable TimeZone=Europe/London",
+			DSN:                  connStrWithDbName,
 			PreferSimpleProtocol: true, // disables implicit prepared statement usage
 		}), &gorm.Config{})
 	}
