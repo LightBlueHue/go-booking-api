@@ -31,6 +31,17 @@ func (s *Service) SetServices(dBService IDBService, hashService IHashService, jw
 	s.BookingService = bookingService
 }
 
+func (s *Service) IsServiceSet() bool {
+
+	return s.DBService == nil ||
+		s.HashService == nil ||
+		s.JWTService == nil ||
+		s.ResponseService == nil ||
+		s.UserService == nil ||
+		s.ValidationService == nil ||
+		s.BookingService == nil
+}
+
 type IService interface {
 	SetServices(IDBService, IHashService, IJWTService, IResponseService, IUserService, IValidationService, IBookingService)
 }

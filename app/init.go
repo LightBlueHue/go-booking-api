@@ -64,34 +64,18 @@ var ServicesFilter = func(c *revel.Controller, fc []revel.Filter) {
 	if db == nil {
 
 		initDB()
+	}
+
+	if ac, ok := c.AppController.(*controllers.AccountController); ok && !ac.Service.IsServiceSet() {
+
 		ds, hs, jwts, rs, us, vs, bs := GetServices()
-		if ac, ok := c.AppController.(*controllers.AccountController); ok {
+		ac.Service.SetServices(ds, hs, jwts, rs, us, vs, bs)
+	}
 
-			ac.Service = services.Service{
+	if bc, ok := c.AppController.(*controllers.BookingController); ok && !bc.Service.IsServiceSet() {
 
-				DBService:         ds,
-				HashService:       hs,
-				JWTService:        jwts,
-				ResponseService:   rs,
-				UserService:       us,
-				ValidationService: vs,
-				BookingService:    bs,
-			}
-		}
-
-		if bc, ok := c.AppController.(*controllers.BookingController); ok {
-
-			bc.Service = services.Service{
-
-				DBService:         ds,
-				HashService:       hs,
-				JWTService:        jwts,
-				ResponseService:   rs,
-				UserService:       us,
-				ValidationService: vs,
-				BookingService:    bs,
-			}
-		}
+		ds, hs, jwts, rs, us, vs, bs := GetServices()
+		bc.Service.SetServices(ds, hs, jwts, rs, us, vs, bs)
 	}
 
 	fc[0](c, fc[1:]) // Execute the next filter stage.
