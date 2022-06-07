@@ -33,6 +33,7 @@ func Test_SetServices_Updates_Correctly(t *testing.T) {
 }
 
 func Test_IsServiceSet_WhenAllSet_ReturnsTrue(t *testing.T) {
+	
 	os.Setenv(GO_BOOKING_API_SECRET, "E59DD115760893782F7FB8CC6C387DE86FFEC3C186A8EFE24184E9CABDB2EFC3")
 	var db *gorm.DB
 	dbs := GetDBService(db)
@@ -51,6 +52,7 @@ func Test_IsServiceSet_WhenAllSet_ReturnsTrue(t *testing.T) {
 }
 
 func Test_IsServiceSet_WhenSomeSet_ReturnsFalse(t *testing.T) {
+	
 	os.Setenv(GO_BOOKING_API_SECRET, "E59DD115760893782F7FB8CC6C387DE86FFEC3C186A8EFE24184E9CABDB2EFC3")
 	var db *gorm.DB
 	dbs := GetDBService(db)
@@ -69,6 +71,7 @@ func Test_IsServiceSet_WhenSomeSet_ReturnsFalse(t *testing.T) {
 }
 
 func Test_IsServiceSet_WhenAllNotSet_ReturnsFalse(t *testing.T) {
+	
 	os.Setenv(GO_BOOKING_API_SECRET, "E59DD115760893782F7FB8CC6C387DE86FFEC3C186A8EFE24184E9CABDB2EFC3")
 	var dbs IDBService = nil
 	var hs IHashService = nil
