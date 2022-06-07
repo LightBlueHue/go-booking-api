@@ -13,7 +13,7 @@ import (
 	"syreclabs.com/go/faker"
 )
 
-func Test_Book_Returns_BookingId(t *testing.T) {
+func Test_Book_WhenNoError_Returns_BookingId(t *testing.T) {
 
 	var db *gorm.DB
 	var setupError error
@@ -99,7 +99,7 @@ func Test_Book_WhenDbBookingIdZero_Returns_Error(t *testing.T) {
 	assert.Equal(t, expectedError.Error(), actualError.Error())
 }
 
-func Test_GetBookings_Returns_Data(t *testing.T) {
+func Test_GetBookings_WhenNoError_Returns_Data(t *testing.T) {
 
 	var db *gorm.DB
 	var setupError error
@@ -127,7 +127,7 @@ func Test_GetBookings_Returns_Data(t *testing.T) {
 	assert.Nil(t, actualError)
 }
 
-func Test_GetBookings_Returns_Error(t *testing.T) {
+func Test_GetBookings_WhenDbError_Returns_Error(t *testing.T) {
 
 	var db *gorm.DB
 	var setupError error
