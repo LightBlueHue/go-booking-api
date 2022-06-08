@@ -12,7 +12,7 @@ Press ctrl+C, then click Debug Revel in the debug pane
 
 ### Start the web server:
 
-        revel run go-booking-api
+        revel run
 
 ### Go to http://localhost:9000/ and you'll see:
 
@@ -55,7 +55,7 @@ The directory structure of a generated Revel application:
 `docker run --name pgAdmin -p 4000:80 -e PGADMIN_DEFAULT_EMAIL="postgres@postgres.com" -e PGADMIN_DEFAULT_PASSWORD="postgres" dpage/pgadmin4`
 
 ## Run Tests
-go test -coverprofile="prof.out" ./../../...
+go test -coverprofile="prof.out" ./...
 
 go tool cover -html="prof.out"
 
