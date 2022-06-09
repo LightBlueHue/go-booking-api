@@ -7,7 +7,7 @@ import (
 	"syreclabs.com/go/faker"
 )
 
-func Test_HashAndSalt_ValidPassword_Returns_CorrectData(t *testing.T) {
+func Test_HashAndSalt_ValidPassword_Returns_HashedPassword(t *testing.T) {
 
 	target := GetHashService()
 

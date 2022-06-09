@@ -106,7 +106,7 @@ func Test_GetClaim_WhenTokenValid_ButWrongClaim_Returns_Error(t *testing.T) {
 	}
 }
 
-func Test_GetSecretKey_WhenSetInEnvironmentVariable_Returns_CorrectData(t *testing.T) {
+func Test_GetSecretKey_WhenSecretSetInEnvironmentVariable_Returns_Secret(t *testing.T) {
 
 	expectedSecrets := []string{"E59DD115760893782F7FB8CC6C387DE86FFEC3C186A8EFE24184E9CABDB2EFC3", " "}
 

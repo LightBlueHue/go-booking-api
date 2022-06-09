@@ -99,7 +99,7 @@ func Test_Book_WhenDbBookingIdZero_Returns_Error(t *testing.T) {
 	assert.Equal(t, expectedError.Error(), actualError.Error())
 }
 
-func Test_GetBookings_WhenNoError_Returns_Data(t *testing.T) {
+func Test_GetBookings_WhenNoError_Returns_Bookings(t *testing.T) {
 
 	var db *gorm.DB
 	var setupError error
