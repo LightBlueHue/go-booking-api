@@ -10,7 +10,7 @@ import (
 	"syreclabs.com/go/faker"
 )
 
-func Test_CreateErrorResponse_Returns_CorrectData(t *testing.T) {
+func Test_CreateErrorResponse_Returns_ErrorResponse(t *testing.T) {
 
 	target := GetResponseService()
 	code := faker.RandomInt(100, 599)
@@ -33,7 +33,7 @@ func Test_CreateErrorResponse_Returns_CorrectData(t *testing.T) {
 	}
 }
 
-func Test_CreateErrorResponse_WithEmptyValidation_Returns_CorrectData(t *testing.T) {
+func Test_CreateErrorResponse_WithEmptyValidation_Returns_ErrorResponse(t *testing.T) {
 
 	target := GetResponseService()
 	code := faker.RandomInt(100, 599)
@@ -47,7 +47,7 @@ func Test_CreateErrorResponse_WithEmptyValidation_Returns_CorrectData(t *testing
 	assert.Empty(t, actual.Error.Details)
 }
 
-func Test_CreateOperationResponse_Returns_CorrectData(t *testing.T) {
+func Test_CreateOperationResponse_Returns_OperationResponse(t *testing.T) {
 
 	target := GetResponseService()
 	context := faker.RandomString(5)

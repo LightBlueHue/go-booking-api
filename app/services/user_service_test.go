@@ -21,7 +21,7 @@ type mockJWTService struct {
 	mock.Mock
 }
 
-func Test_EmailExists_Returns_True(t *testing.T) {
+func Test_EmailExists_WhenEmailExistsInDb_Returns_True(t *testing.T) {
 
 	var db *gorm.DB
 	var setupError error
@@ -48,7 +48,7 @@ func Test_EmailExists_Returns_True(t *testing.T) {
 	assert.True(t, actual)
 }
 
-func Test_EmailExists_Returns_False(t *testing.T) {
+func Test_EmailExists_WhenEmailDoesNotExistInDb_Returns_False(t *testing.T) {
 
 	var db *gorm.DB
 	var setupError error
@@ -74,7 +74,7 @@ func Test_EmailExists_Returns_False(t *testing.T) {
 	assert.False(t, actual)
 }
 
-func Test_GetPassword_Returns_Data(t *testing.T) {
+func Test_GetPassword_WhenPasswordExistsInDb_Returns_Password(t *testing.T) {
 
 	var db *gorm.DB
 	var actualError error
@@ -102,7 +102,7 @@ func Test_GetPassword_Returns_Data(t *testing.T) {
 	assert.Equal(t, pwd, actual)
 }
 
-func Test_GetPassword_Returns_Error(t *testing.T) {
+func Test_GetPassword_WhenDbReturnsError_Returns_Error(t *testing.T) {
 
 	var db *gorm.DB
 	var actualError error
@@ -131,7 +131,7 @@ func Test_GetPassword_Returns_Error(t *testing.T) {
 	assert.Equal(t, expectedError, actualError)
 }
 
-func Test_GetByEmail_Returns_User(t *testing.T) {
+func Test_GetByEmail_WhenEmailExistsInDb_Returns_User(t *testing.T) {
 
 	var db *gorm.DB
 	var setupError error
@@ -161,7 +161,7 @@ func Test_GetByEmail_Returns_User(t *testing.T) {
 	assert.NotNil(t, actualUser)
 }
 
-func Test_GetByEmail_Returns_Error(t *testing.T) {
+func Test_GetByEmail_WhenEmailDoesNotExistInDb_Returns_Error(t *testing.T) {
 
 	var db *gorm.DB
 	var setupError error
@@ -188,7 +188,7 @@ func Test_GetByEmail_Returns_Error(t *testing.T) {
 	assert.Nil(t, actualUser)
 }
 
-func Test_GetByToken_Returns_User(t *testing.T) {
+func Test_GetByToken_WhenUserExistsInDb_Returns_User(t *testing.T) {
 
 	var db *gorm.DB
 	var setupError error
@@ -220,7 +220,7 @@ func Test_GetByToken_Returns_User(t *testing.T) {
 	assert.NotNil(t, actualUser)
 }
 
-func Test_GetByToken_Returns_Error(t *testing.T) {
+func Test_GetByToken_WhenClaimInvalid_Returns_Error(t *testing.T) {
 
 	var db *gorm.DB
 	var setupError error
@@ -254,7 +254,38 @@ func Test_GetByToken_Returns_Error(t *testing.T) {
 	assert.Nil(t, actualUser)
 }
 
-func Test_Save_Returns_NoError(t *testing.T) {
+func Test_GetByToken_WhenUserDoesNotExistInDb_Returns_Error(t *testing.T) {
+
+	var db *gorm.DB
+	var setupError error
+
+	sqlDb, sqlMock, _ := sqlmock.New()
+	defer sqlDb.Close()
+	db, setupError = gorm.Open(postgres.New(postgres.Config{
+		Conn: sqlDb,
+	}), &gorm.Config{})
+
+	var jwts = newMockJWTService(t)
+	token := faker.RandomString(20)
+	email := faker.Internet().Email()
+	jwts.On("GetClaim", token, EMAIL_CLAIM).Return(email, nil)
+	expectedError := errors.New("my error")
+
+	sqlMock.ExpectQuery(regexp.QuoteMeta("")).
+		WithArgs(email).
+		WillReturnError(expectedError)
+
+	assert.Nil(t, setupError)
+	target := GetUserService(db)
+
+	actualUser, actualError := target.GetByToken(token, jwts)
+
+	assert.Equal(t, expectedError, actualError)
+	assert.Error(t, actualError)
+	assert.Nil(t, actualUser)
+}
+
+func Test_Save_WhenNoError_Returns_NoError(t *testing.T) {
 
 	var db *gorm.DB
 	var setupError error
@@ -283,7 +314,7 @@ func Test_Save_Returns_NoError(t *testing.T) {
 	assert.Nil(t, actualError)
 }
 
-func Test_Save_Returns_Error(t *testing.T) {
+func Test_Save_WhenDbError_Returns_Error(t *testing.T) {
 
 	var db *gorm.DB
 	var setupError error
