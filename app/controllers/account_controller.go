@@ -1,3 +1,4 @@
+// Package controllers contains api controllers.
 package controllers
 
 import (
