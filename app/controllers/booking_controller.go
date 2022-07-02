@@ -10,16 +10,19 @@ import (
 	"github.com/revel/revel"
 )
 
+// BookingController provides services such as making a Booking and Get bookings by user.
 type BookingController struct {
 	*revel.Controller
 	Service services.Service
 }
 
+// Before checks certain conditions are met before endpoints are called. In this case a user has to be logged in.
 func (c *BookingController) Before() (result revel.Result, controller *BookingController) {
 
 	return IsLoggedIn(c.Controller, c.Service), c
 }
 
+// Book allows the logged in user to book a ticket.
 func (c *BookingController) Book(count uint) revel.Result {
 
 	c.Service.ValidationService.ValidateBookingRequest(c.Validation, count)
@@ -54,6 +57,7 @@ func (c *BookingController) Book(count uint) revel.Result {
 	return c.RenderJSON(response)
 }
 
+// GetBookings retrieves booking history of logged in user.
 func (c *BookingController) GetBookings() revel.Result {
 
 	var user *models.User
