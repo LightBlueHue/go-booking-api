@@ -2,6 +2,7 @@ package models
 
 import "gorm.io/gorm"
 
+// User represents and holds information about a user.
 type User struct {
 	gorm.Model
 	FirstName    string
