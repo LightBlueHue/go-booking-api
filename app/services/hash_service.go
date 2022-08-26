@@ -6,7 +6,7 @@ import (
 
 type HashService struct{}
 
-func GetHashService() IHashService {
+func NewHashService() IHashService {
 
 	return &HashService{}
 }

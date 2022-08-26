@@ -9,7 +9,7 @@ import (
 
 func Test_HashAndSalt_ValidPassword_Returns_HashedPassword(t *testing.T) {
 
-	target := GetHashService()
+	target := NewHashService()
 
 	pwd := faker.Internet().Password(4, 20)
 	actual, err := target.HashAndSalt(pwd)
@@ -21,7 +21,7 @@ func Test_HashAndSalt_ValidPassword_Returns_HashedPassword(t *testing.T) {
 
 func Test_ComparePasswords_WithCorrectData_Returns_True(t *testing.T) {
 
-	target := GetHashService()
+	target := NewHashService()
 
 	pwd := faker.Internet().Password(4, 20)
 	hshPwd, err := target.HashAndSalt(pwd)
@@ -36,7 +36,7 @@ func Test_ComparePasswords_WithCorrectData_Returns_True(t *testing.T) {
 func Test_ComparePasswords_WithInValidData_Returns_False(t *testing.T) {
 
 	pwds := []string{faker.Internet().Password(4, 20), ""}
-	target := GetHashService()
+	target := NewHashService()
 
 	hshPwd, err := target.HashAndSalt(faker.Internet().Password(4, 20))
 

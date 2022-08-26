@@ -16,7 +16,7 @@ type BookingService struct {
 	db *gorm.DB
 }
 
-func GetBookingService(db *gorm.DB) IBookingService {
+func NewBookingService(db *gorm.DB) IBookingService {
 
 	return &BookingService{db}
 }

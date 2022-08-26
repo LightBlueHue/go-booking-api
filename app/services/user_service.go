@@ -16,7 +16,7 @@ type UserService struct {
 	db *gorm.DB
 }
 
-func GetUserService(db *gorm.DB) IUserService {
+func NewUserService(db *gorm.DB) IUserService {
 
 	return &UserService{db}
 }

@@ -31,7 +31,7 @@ func (s *Service) SetServices(dBService IDBService, hashService IHashService, jw
 	s.BookingService = bookingService
 }
 
-func (s *Service) IsServiceSet() bool {
+func (s *Service) IsServiceInitialised() bool {
 
 	return s.DBService != nil &&
 		s.HashService != nil &&

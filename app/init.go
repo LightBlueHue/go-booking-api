@@ -66,15 +66,15 @@ var ServicesFilter = func(c *revel.Controller, fc []revel.Filter) {
 		initDB()
 	}
 
-	if ac, ok := c.AppController.(*controllers.AccountController); ok && !ac.Service.IsServiceSet() {
+	if ac, ok := c.AppController.(*controllers.AccountController); ok && !ac.Service.IsServiceInitialised() {
 
-		ds, hs, jwts, rs, us, vs, bs := GetServices()
+		ds, hs, jwts, rs, us, vs, bs := NewServices()
 		ac.Service.SetServices(ds, hs, jwts, rs, us, vs, bs)
 	}
 
-	if bc, ok := c.AppController.(*controllers.BookingController); ok && !bc.Service.IsServiceSet() {
+	if bc, ok := c.AppController.(*controllers.BookingController); ok && !bc.Service.IsServiceInitialised() {
 
-		ds, hs, jwts, rs, us, vs, bs := GetServices()
+		ds, hs, jwts, rs, us, vs, bs := NewServices()
 		bc.Service.SetServices(ds, hs, jwts, rs, us, vs, bs)
 	}
 
@@ -89,21 +89,21 @@ var ServicesFilter = func(c *revel.Controller, fc []revel.Filter) {
 //	}
 //}
 
-func GetServices() (services.IDBService, services.IHashService, services.IJWTService, services.IResponseService, services.IUserService, services.IValidationService, services.IBookingService) {
+func NewServices() (services.IDBService, services.IHashService, services.IJWTService, services.IResponseService, services.IUserService, services.IValidationService, services.IBookingService) {
 
 	if db == nil {
 		panic("INIT DB")
 	}
-	return services.GetDBService(db), services.GetHashService(), services.GetJWTService(), services.GetResponseService(), services.GetUserService(db), services.GetValidationService(), services.GetBookingService(db)
+	return services.NewDBService(db), services.NewHashService(), services.NewJWTService(), services.NewResponseService(), services.NewUserService(db), services.GetValidationService(), services.NewBookingService(db)
 }
 
 func initDB() {
 
-	dbInfo := getDBInfo()
-	db = services.GetDBService(db).InitDB(dbInfo, gorm.Open, fmt.Sprintf(services.SQL_STATEMENT_CREATE_DB, dbInfo.DbName))
+	dbInfo := newDBInfo()
+	db = services.NewDBService(db).InitDB(dbInfo, gorm.Open, fmt.Sprintf(services.SQL_STATEMENT_CREATE_DB, dbInfo.DbName))
 }
 
-func getDBInfo() services.DbInfo {
+func newDBInfo() services.DbInfo {
 
 	dbInfo := services.DbInfo{}
 

@@ -10,7 +10,7 @@ import (
 type ResponseService struct {
 }
 
-func GetResponseService() IResponseService {
+func NewResponseService() IResponseService {
 
 	return &ResponseService{}
 }

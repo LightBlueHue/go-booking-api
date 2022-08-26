@@ -58,7 +58,7 @@ type DbInfo struct {
 	TimeZone string
 }
 
-func GetDBService(db *gorm.DB) IDBService {
+func NewDBService(db *gorm.DB) IDBService {
 
 	return &DBService{db}
 }

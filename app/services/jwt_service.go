@@ -27,7 +27,7 @@ type JwtService struct {
 	issure    string
 }
 
-func GetJWTService() IJWTService {
+func NewJWTService() IJWTService {
 
 	return &JwtService{
 		secretKey: getSecretKey(),
