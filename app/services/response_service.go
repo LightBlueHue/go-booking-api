@@ -15,6 +15,7 @@ func NewResponseService() IResponseService {
 	return &ResponseService{}
 }
 
+// CreateErrorResponse creates error response object typical containing http error status code with error detail.
 func (s *ResponseService) CreateErrorResponse(code int, message string, validationErrors []*revel.ValidationError) *responses.ErrorResponse {
 
 	response := &responses.ErrorResponse{}
@@ -26,6 +27,7 @@ func (s *ResponseService) CreateErrorResponse(code int, message string, validati
 	return response
 }
 
+// CreateOperationResponse creates a response object typically containing http status code 2xx.
 func (s *ResponseService) CreateOperationResponse(context string, value interface{}) *responses.OperationResponse {
 
 	response := &responses.OperationResponse{Context: context, Value: value}

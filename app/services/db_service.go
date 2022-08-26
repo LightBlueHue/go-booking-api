@@ -63,6 +63,7 @@ func NewDBService(db *gorm.DB) IDBService {
 	return &DBService{db}
 }
 
+// InitDB initialises database and creates tables. It will by create a new database if one does not exist.
 func (s *DBService) InitDB(dbInfo DbInfo, open DbInitialiser, createDbStatement string) *gorm.DB {
 
 	var dbResult *gorm.DB

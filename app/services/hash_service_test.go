@@ -28,9 +28,10 @@ func Test_ComparePasswords_WithCorrectData_Returns_True(t *testing.T) {
 
 	assert.Nil(t, err)
 
-	actual := target.ComparePasswords(hshPwd, pwd)
+	actual, err := target.CompareHashAndPassword(hshPwd, pwd)
 
 	assert.True(t, actual)
+	assert.Nil(t, err)
 }
 
 func Test_ComparePasswords_WithInValidData_Returns_False(t *testing.T) {
@@ -44,8 +45,9 @@ func Test_ComparePasswords_WithInValidData_Returns_False(t *testing.T) {
 
 		assert.Nil(t, err)
 
-		actual := target.ComparePasswords(hshPwd, pwd)
+		actual, err := target.CompareHashAndPassword(hshPwd, pwd)
 
 		assert.False(t, actual)
+		assert.NotNil(t, err)
 	}
 }

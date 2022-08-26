@@ -56,7 +56,7 @@ type (
 
 type IHashService interface {
 	HashAndSalt(password string) (string, error)
-	ComparePasswords(hashedPwd string, password string) bool
+	CompareHashAndPassword(hashedPwd string, password string) (bool, error)
 }
 
 type IJWTService interface {

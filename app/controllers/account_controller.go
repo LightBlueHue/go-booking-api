@@ -42,7 +42,7 @@ func (c *AccountController) Login() revel.Result {
 		return c.RenderJSON(resp)
 	}
 
-	if pwdEqual := c.Service.HashService.ComparePasswords(hashedPwd, model.Password); !pwdEqual {
+	if pwdEqual, _ := c.Service.HashService.CompareHashAndPassword(hashedPwd, model.Password); !pwdEqual {
 
 		c.Response.Status = http.StatusBadRequest
 		c.Validation.Errors = append(c.Validation.Errors, &revel.ValidationError{Message: "unknown account", Key: "account"})

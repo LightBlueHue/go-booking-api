@@ -11,6 +11,7 @@ func NewHashService() IHashService {
 	return &HashService{}
 }
 
+// HashAndSalt hashes and salts a password.
 func (s *HashService) HashAndSalt(password string) (string, error) {
 
 	pwd := []byte(password)
@@ -29,7 +30,8 @@ func (s *HashService) HashAndSalt(password string) (string, error) {
 	return string(hash), nil
 }
 
-func (s *HashService) ComparePasswords(hashedPwd string, password string) bool {
+// CompareHashAndPassword compares a bcrypt hashed password with its possible plaintext equivalent. Returns true on success
+func (s *HashService) CompareHashAndPassword(hashedPwd string, password string) (bool, error) {
 
 	plainPwd := []byte(password)
 	// Since we'll be getting the hashed password from the DB it
@@ -38,8 +40,8 @@ func (s *HashService) ComparePasswords(hashedPwd string, password string) bool {
 
 	if err := bcrypt.CompareHashAndPassword(byteHash, plainPwd); err != nil {
 
-		return false
+		return false, err
 	}
 
-	return true
+	return true, nil
 }
