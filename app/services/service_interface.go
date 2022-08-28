@@ -20,18 +20,13 @@ type Service struct {
 	BookingService    IBookingService
 }
 
-func (s *Service) SetServices(dBService IDBService, hashService IHashService, jwtService IJWTService, responseService IResponseService, userService IUserService, validationService IValidationService, bookingService IBookingService) {
+func NewService(db *gorm.DB) Service {
 
-	s.DBService = dBService
-	s.HashService = hashService
-	s.JWTService = jwtService
-	s.ResponseService = responseService
-	s.UserService = userService
-	s.ValidationService = validationService
-	s.BookingService = bookingService
+	return Service{DBService: NewDBService(db), HashService: NewHashService(), JWTService: NewJWTService(), ResponseService: NewResponseService(), UserService: NewUserService(db), ValidationService: GetValidationService(), BookingService: NewBookingService(db)}
 }
 
-func (s *Service) IsServiceInitialised() bool {
+// IsServiceInitialized returns true if all services are initialized.
+func (s *Service) IsServiceInitialized() bool {
 
 	return s.DBService != nil &&
 		s.HashService != nil &&
@@ -42,16 +37,12 @@ func (s *Service) IsServiceInitialised() bool {
 		s.BookingService != nil
 }
 
-type IService interface {
-	SetServices(IDBService, IHashService, IJWTService, IResponseService, IUserService, IValidationService, IBookingService)
-}
-
 type IDBService interface {
-	InitDB(dbInfo DbInfo, dbIntialiser DbInitialiser, createDbStatement string) *gorm.DB
+	InitDB(dbInfo DbInfo, dbInitializer DbInitializer, createDbStatement string) *gorm.DB
 }
 
 type (
-	DbInitialiser func(dialector gorm.Dialector, opts ...gorm.Option) (db *gorm.DB, err error)
+	DbInitializer func(dialector gorm.Dialector, opts ...gorm.Option) (db *gorm.DB, err error)
 )
 
 type IHashService interface {
