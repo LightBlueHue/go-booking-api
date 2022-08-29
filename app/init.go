@@ -27,10 +27,10 @@ func init() {
 		revel.RouterFilter,            // Use the routing table to select the right Action
 		revel.FilterConfiguringFilter, // A hook for adding or removing per-Action filters.
 		revel.ParamsFilter,            // Parse parameters into Controller.Params.
-		ServicesFilter,
 		//revel.SessionFilter,     // Restore and write the session cookie.
 		//revel.FlashFilter,       // Restore and write the flash cookie.
-		revel.ValidationFilter,  // Restore kept validation errors and save new ones from cookie.
+		revel.ValidationFilter, // Restore kept validation errors and save new ones from cookie.
+		ServicesFilter,
 		revel.I18nFilter,        // Resolve the requested language
 		HeaderFilter,            // Add some security based headers
 		revel.InterceptorFilter, // Run interceptors around the action.
@@ -66,12 +66,12 @@ var ServicesFilter = func(c *revel.Controller, fc []revel.Filter) {
 		initDB()
 	}
 
-	if ac, ok := c.AppController.(*controllers.AccountController); ok && !ac.Service.IsServiceInitialized() {
+	if ac, ok := c.AppController.(*controllers.AccountController); ok {
 
 		ac.Service = services.NewService(db, ac.Validation)
 	}
 
-	if bc, ok := c.AppController.(*controllers.BookingController); ok && !bc.Service.IsServiceInitialized() {
+	if bc, ok := c.AppController.(*controllers.BookingController); ok {
 
 		bc.Service = services.NewService(db, bc.Validation)
 	}

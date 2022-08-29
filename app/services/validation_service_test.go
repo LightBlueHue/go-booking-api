@@ -18,7 +18,7 @@ func Test_ValidateLoginRequest_WhenEmailInValid_Returns_Error(t *testing.T) {
 		{Email: "ya.com", Password: faker.Internet().Password(4, 20)},
 	}
 
-	for i, request := range requests {
+	for _, request := range requests {
 
 		rv := createValidation()
 		target := NewValidationService(rv)
@@ -26,7 +26,7 @@ func Test_ValidateLoginRequest_WhenEmailInValid_Returns_Error(t *testing.T) {
 		target.ValidateLoginRequest(&request)
 
 		assert.True(t, rv.HasErrors())
-		assert.Contains(t, rv.Errors[i].Message, "email")
+		assert.Contains(t, rv.Errors[0].Message, "email")
 	}
 }
 
@@ -139,12 +139,12 @@ func Test_ValidateRegisterRequest_WhenEmailInValid_Returns_Error(t *testing.T) {
 		{FirstName: firstName, LastName: lastName, Email: "ya.com", Password: pwd, ConfirmPassword: pwd},
 	}
 
-	for i, request := range requests {
+	for _, request := range requests {
 
 		target.ValidateRegisterRequest(&request)
 
 		assert.True(t, rv.HasErrors())
-		assert.Contains(t, rv.Errors[i].Message, "email")
+		assert.Contains(t, rv.Errors[0].Message, "email")
 	}
 }
 
@@ -166,12 +166,12 @@ func Test_ValidateRegisterRequest_WhenPasswordInValid_Returns_Error(t *testing.T
 		{FirstName: firstName, LastName: lastName, Email: email, Password: pwd3, ConfirmPassword: pwd3},
 	}
 
-	for i, request := range requests {
+	for _, request := range requests {
 
 		target.ValidateRegisterRequest(&request)
 
 		assert.True(t, rv.HasErrors())
-		assert.Equal(t, VALIDATION_REQUEST_PASSWORD_LENGTH, rv.Errors[i].Message)
+		assert.Equal(t, VALIDATION_REQUEST_PASSWORD_LENGTH, rv.Errors[0].Message)
 	}
 }
 
@@ -193,12 +193,12 @@ func Test_ValidateRegisterRequest_WhenPasswordsDoNotMatch_Returns_Error(t *testi
 		{FirstName: firstName, LastName: lastName, Email: email, Password: pwd, ConfirmPassword: confPwd3},
 	}
 
-	for i, request := range requests {
+	for _, request := range requests {
 
 		target.ValidateRegisterRequest(&request)
 
 		assert.True(t, rv.HasErrors())
-		assert.Equal(t, VALIDATION_REGISTER_REQUEST_PASSWORD_NOMATCH, rv.Errors[i].Message)
+		assert.Equal(t, VALIDATION_REGISTER_REQUEST_PASSWORD_NOMATCH, rv.Errors[0].Message)
 	}
 }
 
