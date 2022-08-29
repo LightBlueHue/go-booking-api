@@ -87,14 +87,6 @@ var ServicesFilter = func(c *revel.Controller, fc []revel.Filter) {
 //	}
 //}
 
-// func NewServices() (services.IDBService, services.IHashService, services.IJWTService, services.IResponseService, services.IUserService, services.IValidationService, services.IBookingService) {
-
-// 	if db == nil {
-// 		panic("INIT DB")
-// 	}
-// 	return services.NewDBService(db), services.NewHashService(), services.NewJWTService(), services.NewResponseService(), services.NewUserService(db), services.GetValidationService(), services.NewBookingService(db)
-// }
-
 func initDB() {
 
 	dbInfo := newDBInfo()
