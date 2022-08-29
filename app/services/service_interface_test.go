@@ -13,7 +13,7 @@ func Test_SetServices_Updates_Correctly(t *testing.T) {
 	os.Setenv(GO_BOOKING_API_SECRET, "E59DD115760893782F7FB8CC6C387DE86FFEC3C186A8EFE24184E9CABDB2EFC3")
 	var db *gorm.DB
 
-	target := NewService(db)
+	target := NewService(db, createValidation())
 
 	assert.NotNil(t, target.DBService)
 	assert.NotNil(t, target.HashService)
@@ -29,7 +29,7 @@ func Test_IsServiceSet_WhenAllSet_ReturnsTrue(t *testing.T) {
 	os.Setenv(GO_BOOKING_API_SECRET, "E59DD115760893782F7FB8CC6C387DE86FFEC3C186A8EFE24184E9CABDB2EFC3")
 	var db *gorm.DB
 
-	target := NewService(db)
+	target := NewService(db, createValidation())
 
 	var result = target.IsServiceInitialized()
 
@@ -41,7 +41,7 @@ func Test_IsServiceSet_WhenSomeSet_ReturnsFalse(t *testing.T) {
 	os.Setenv(GO_BOOKING_API_SECRET, "E59DD115760893782F7FB8CC6C387DE86FFEC3C186A8EFE24184E9CABDB2EFC3")
 	var db *gorm.DB
 
-	target := NewService(db)
+	target := NewService(db, createValidation())
 	target.HashService = nil
 	target.ResponseService = nil
 
@@ -55,7 +55,7 @@ func Test_IsServiceSet_WhenAllNotSet_ReturnsFalse(t *testing.T) {
 	os.Setenv(GO_BOOKING_API_SECRET, "E59DD115760893782F7FB8CC6C387DE86FFEC3C186A8EFE24184E9CABDB2EFC3")
 	var db *gorm.DB
 
-	target := NewService(db)
+	target := NewService(db, createValidation())
 	target.DBService = nil
 	target.HashService = nil
 	target.JWTService = nil

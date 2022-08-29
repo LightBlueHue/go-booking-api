@@ -68,12 +68,12 @@ var ServicesFilter = func(c *revel.Controller, fc []revel.Filter) {
 
 	if ac, ok := c.AppController.(*controllers.AccountController); ok && !ac.Service.IsServiceInitialized() {
 
-		ac.Service = services.NewService(db)
+		ac.Service = services.NewService(db, ac.Validation)
 	}
 
 	if bc, ok := c.AppController.(*controllers.BookingController); ok && !bc.Service.IsServiceInitialized() {
 
-		bc.Service = services.NewService(db)
+		bc.Service = services.NewService(db, bc.Validation)
 	}
 
 	fc[0](c, fc[1:]) // Execute the next filter stage.

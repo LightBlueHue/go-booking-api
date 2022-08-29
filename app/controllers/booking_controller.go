@@ -25,7 +25,7 @@ func (c *BookingController) Before() (result revel.Result, controller *BookingCo
 // Book allows the logged in user to book a ticket.
 func (c *BookingController) Book(count uint) revel.Result {
 
-	c.Service.ValidationService.ValidateBookingRequest(c.Validation, count)
+	c.Service.ValidationService.ValidateBookingRequest(count)
 	if c.Validation.HasErrors() {
 
 		c.Response.Status = http.StatusBadRequest

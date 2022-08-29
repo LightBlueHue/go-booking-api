@@ -16,29 +16,30 @@ const (
 )
 
 type ValidationService struct {
+	*revel.Validation
 }
 
-func GetValidationService() IValidationService {
+func NewValidationService(v *revel.Validation) IValidationService {
 
-	return &ValidationService{}
+	return &ValidationService{v}
 }
 
-func (s *ValidationService) ValidateLoginRequest(v *revel.Validation, l *requests.LoginRequest) {
+func (s *ValidationService) ValidateLoginRequest(l *requests.LoginRequest) {
 
-	v.Email(l.Email)
-	v.Match(l.Password, regexp.MustCompile("^\\w{4,20}$")).Message(VALIDATION_REQUEST_PASSWORD_LENGTH)
+	s.Email(l.Email)
+	s.Match(l.Password, regexp.MustCompile("^\\w{4,20}$")).Message(VALIDATION_REQUEST_PASSWORD_LENGTH)
 }
 
-func (s *ValidationService) ValidateRegisterRequest(v *revel.Validation, l *requests.RegisterRequest) {
+func (s *ValidationService) ValidateRegisterRequest(l *requests.RegisterRequest) {
 
-	v.Match(l.FirstName, regexp.MustCompile("^\\S+$")).Message(VALIDATION_REGISTER_REQUEST_FIRSTNAME_INVALID)
-	v.Match(l.LastName, regexp.MustCompile("^\\S+$")).Message(VALIDATION_REGISTER_REQUEST_LASTNAME_INVALID)
-	v.Email(l.Email)
-	v.Match(l.Password, regexp.MustCompile("^\\w{4,20}$")).Message(VALIDATION_REQUEST_PASSWORD_LENGTH)
-	v.Required(l.Password == l.ConfirmPassword).Message(VALIDATION_REGISTER_REQUEST_PASSWORD_NOMATCH)
+	s.Match(l.FirstName, regexp.MustCompile("^\\S+$")).Message(VALIDATION_REGISTER_REQUEST_FIRSTNAME_INVALID)
+	s.Match(l.LastName, regexp.MustCompile("^\\S+$")).Message(VALIDATION_REGISTER_REQUEST_LASTNAME_INVALID)
+	s.Email(l.Email)
+	s.Match(l.Password, regexp.MustCompile("^\\w{4,20}$")).Message(VALIDATION_REQUEST_PASSWORD_LENGTH)
+	s.Required(l.Password == l.ConfirmPassword).Message(VALIDATION_REGISTER_REQUEST_PASSWORD_NOMATCH)
 }
 
-func (s *ValidationService) ValidateBookingRequest(v *revel.Validation, count uint) {
+func (v *ValidationService) ValidateBookingRequest(count uint) {
 
 	min := int(count)
 	v.Min(min, 1).Message(VALIDATION_BOOKING_REQUEST_VALID_NUMBER)

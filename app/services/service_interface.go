@@ -20,9 +20,11 @@ type Service struct {
 	BookingService    IBookingService
 }
 
-func NewService(db *gorm.DB) Service {
+func NewService(db *gorm.DB, v *revel.Validation) Service {
 
-	return Service{DBService: NewDBService(db), HashService: NewHashService(), JWTService: NewJWTService(), ResponseService: NewResponseService(), UserService: NewUserService(db), ValidationService: GetValidationService(), BookingService: NewBookingService(db)}
+	return Service{DBService: NewDBService(db), HashService: NewHashService(), JWTService: NewJWTService(),
+		ResponseService: NewResponseService(), UserService: NewUserService(db),
+		ValidationService: NewValidationService(v), BookingService: NewBookingService(db)}
 }
 
 // IsServiceInitialized returns true if all services are initialized.
@@ -70,9 +72,9 @@ type IUserService interface {
 }
 
 type IValidationService interface {
-	ValidateLoginRequest(v *revel.Validation, l *requests.LoginRequest)
-	ValidateRegisterRequest(v *revel.Validation, l *requests.RegisterRequest)
-	ValidateBookingRequest(v *revel.Validation, count uint)
+	ValidateLoginRequest( l *requests.LoginRequest)
+	ValidateRegisterRequest( l *requests.RegisterRequest)
+	ValidateBookingRequest( count uint)
 }
 
 type IBookingService interface {

@@ -23,7 +23,7 @@ func (c *AccountController) Login() revel.Result {
 
 	var model requests.LoginRequest
 	c.Params.BindJSON(&model)
-	c.Service.ValidationService.ValidateLoginRequest(c.Validation, &model)
+	c.Service.ValidationService.ValidateLoginRequest(&model)
 
 	if c.Validation.HasErrors() {
 
@@ -60,7 +60,7 @@ func (c *AccountController) Register() revel.Result {
 
 	var model requests.RegisterRequest
 	c.Params.BindJSON(&model)
-	c.Service.ValidationService.ValidateRegisterRequest(c.Validation, &model)
+	c.Service.ValidationService.ValidateRegisterRequest(&model)
 
 	if c.Validation.HasErrors() {
 
