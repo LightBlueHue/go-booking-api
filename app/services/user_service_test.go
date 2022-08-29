@@ -23,6 +23,7 @@ type mockJWTService struct {
 
 func Test_EmailExists_WhenEmailExistsInDb_Returns_True(t *testing.T) {
 
+	// Arrange
 	var db *gorm.DB
 	var setupError error
 
@@ -43,13 +44,16 @@ func Test_EmailExists_WhenEmailExistsInDb_Returns_True(t *testing.T) {
 	assert.Nil(t, setupError)
 	target := NewUserService(db)
 
+	// Act
 	actual := target.EmailExists(email)
 
+	// Assert
 	assert.True(t, actual)
 }
 
 func Test_EmailExists_WhenEmailDoesNotExistInDb_Returns_False(t *testing.T) {
 
+	// Arrange
 	var db *gorm.DB
 	var setupError error
 
@@ -69,13 +73,16 @@ func Test_EmailExists_WhenEmailDoesNotExistInDb_Returns_False(t *testing.T) {
 	assert.Nil(t, setupError)
 	target := NewUserService(db)
 
+	// Act
 	actual := target.EmailExists(email)
 
+	// Assert
 	assert.False(t, actual)
 }
 
 func Test_GetPassword_WhenPasswordExistsInDb_Returns_Password(t *testing.T) {
 
+	// Arrange
 	var db *gorm.DB
 	var actualError error
 	var setupError error
@@ -96,14 +103,17 @@ func Test_GetPassword_WhenPasswordExistsInDb_Returns_Password(t *testing.T) {
 	assert.Nil(t, setupError)
 	target := NewUserService(db)
 
+	// Act
 	actual, actualError := target.GetPassword(pwd)
 
+	// Assert
 	assert.Nil(t, actualError)
 	assert.Equal(t, pwd, actual)
 }
 
 func Test_GetPassword_WhenDbReturnsError_Returns_Error(t *testing.T) {
 
+	// Arrange
 	var db *gorm.DB
 	var actualError error
 	var setupError error
@@ -124,8 +134,10 @@ func Test_GetPassword_WhenDbReturnsError_Returns_Error(t *testing.T) {
 	assert.Nil(t, setupError)
 	target := NewUserService(db)
 
+	// Act
 	actualPwd, actualError := target.GetPassword(pwd)
 
+	// Assert
 	assert.Empty(t, actualPwd)
 	assert.Error(t, actualError)
 	assert.Equal(t, expectedError, actualError)
@@ -133,6 +145,7 @@ func Test_GetPassword_WhenDbReturnsError_Returns_Error(t *testing.T) {
 
 func Test_GetByEmail_WhenEmailExistsInDb_Returns_User(t *testing.T) {
 
+	// Arrange
 	var db *gorm.DB
 	var setupError error
 	var defaultTime time.Time
@@ -155,14 +168,17 @@ func Test_GetByEmail_WhenEmailExistsInDb_Returns_User(t *testing.T) {
 	assert.Nil(t, setupError)
 	target := NewUserService(db)
 
+	// Act
 	actualUser, actualError := target.GetByEmail(email)
 
+	// Assert
 	assert.Nil(t, actualError)
 	assert.NotNil(t, actualUser)
 }
 
 func Test_GetByEmail_WhenEmailDoesNotExistInDb_Returns_Error(t *testing.T) {
 
+	// Arrange
 	var db *gorm.DB
 	var setupError error
 	expectedError := errors.New("my error")
@@ -181,8 +197,10 @@ func Test_GetByEmail_WhenEmailDoesNotExistInDb_Returns_Error(t *testing.T) {
 	assert.Nil(t, setupError)
 	target := NewUserService(db)
 
+	// Act
 	actualUser, actualError := target.GetByEmail(email)
 
+	// Assert
 	assert.Equal(t, expectedError, actualError)
 	assert.Error(t, actualError)
 	assert.Nil(t, actualUser)
@@ -190,6 +208,7 @@ func Test_GetByEmail_WhenEmailDoesNotExistInDb_Returns_Error(t *testing.T) {
 
 func Test_GetByToken_WhenUserExistsInDb_Returns_User(t *testing.T) {
 
+	// Arrange
 	var db *gorm.DB
 	var setupError error
 	var defaultTime time.Time
@@ -203,25 +222,32 @@ func Test_GetByToken_WhenUserExistsInDb_Returns_User(t *testing.T) {
 	var jwts = newMockJWTService(t)
 	utcNow := time.Now().UTC()
 	token := faker.RandomString(20)
-	email := faker.Internet().Email()
-	jwts.On("GetClaim", token, EMAIL_CLAIM).Return(email, nil)
+	expectedUser := &models.User{FirstName: "yac", LastName: "yaccadamia", Email: "yac@yac.co", CredentialID: 1}
+	jwts.On("GetClaim", token, EMAIL_CLAIM).Return(expectedUser.Email, nil)
 
 	sqlMock.ExpectQuery(regexp.QuoteMeta("")).
-		WithArgs(email).
+		WithArgs(expectedUser.Email).
 		WillReturnRows(sqlmock.NewRows([]string{"id", "created_at", "updated_at", "deleted_at", "first_name", "last_name", "email", "credential_id"}).
-			AddRow("1", utcNow, utcNow, defaultTime, "yac", "yaccadamia", "yac@yac.co", "1"))
+			AddRow("1", utcNow, utcNow, defaultTime, expectedUser.FirstName, expectedUser.LastName, expectedUser.Email, expectedUser.CredentialID))
 
 	assert.Nil(t, setupError)
 	target := NewUserService(db)
 
+	// Act
 	actualUser, actualError := target.GetByToken(token, jwts)
 
+	// Assert
 	assert.Nil(t, actualError)
 	assert.NotNil(t, actualUser)
+	assert.Equal(t, expectedUser.FirstName, actualUser.FirstName)
+	assert.Equal(t, expectedUser.LastName, actualUser.LastName)
+	assert.Equal(t, expectedUser.Email, actualUser.Email)
+	assert.Equal(t, expectedUser.CredentialID, actualUser.CredentialID)
 }
 
 func Test_GetByToken_WhenClaimInvalid_Returns_Error(t *testing.T) {
 
+	// Arrange
 	var db *gorm.DB
 	var setupError error
 	var defaultTime time.Time
@@ -247,8 +273,10 @@ func Test_GetByToken_WhenClaimInvalid_Returns_Error(t *testing.T) {
 	assert.Nil(t, setupError)
 	target := NewUserService(db)
 
+	// Act
 	actualUser, actualError := target.GetByToken(token, jwts)
 
+	// Assert
 	assert.Equal(t, expectedError, actualError)
 	assert.Error(t, actualError)
 	assert.Nil(t, actualUser)
@@ -256,6 +284,7 @@ func Test_GetByToken_WhenClaimInvalid_Returns_Error(t *testing.T) {
 
 func Test_GetByToken_WhenUserDoesNotExistInDb_Returns_Error(t *testing.T) {
 
+	// Arrange
 	var db *gorm.DB
 	var setupError error
 
@@ -278,8 +307,10 @@ func Test_GetByToken_WhenUserDoesNotExistInDb_Returns_Error(t *testing.T) {
 	assert.Nil(t, setupError)
 	target := NewUserService(db)
 
+	// Act
 	actualUser, actualError := target.GetByToken(token, jwts)
 
+	// Assert
 	assert.Equal(t, expectedError, actualError)
 	assert.Error(t, actualError)
 	assert.Nil(t, actualUser)
@@ -287,6 +318,7 @@ func Test_GetByToken_WhenUserDoesNotExistInDb_Returns_Error(t *testing.T) {
 
 func Test_Save_WhenNoError_Returns_NoError(t *testing.T) {
 
+	// Arrange
 	var db *gorm.DB
 	var setupError error
 
@@ -309,13 +341,16 @@ func Test_Save_WhenNoError_Returns_NoError(t *testing.T) {
 	assert.Nil(t, setupError)
 	target := NewUserService(db)
 
+	// Act
 	actualError := target.Save(user)
 
+	// Assert
 	assert.Nil(t, actualError)
 }
 
 func Test_Save_WhenDbError_Returns_Error(t *testing.T) {
 
+	// Arrange
 	var db *gorm.DB
 	var setupError error
 
@@ -338,8 +373,10 @@ func Test_Save_WhenDbError_Returns_Error(t *testing.T) {
 	assert.Nil(t, setupError)
 	target := NewUserService(db)
 
+	// Act
 	actualError := target.Save(user)
 
+	// Assert
 	assert.Error(t, actualError)
 	assert.Equal(t, expectedError, actualError)
 }

@@ -9,18 +9,22 @@ import (
 
 func Test_HashAndSalt_ValidPassword_Returns_HashedPassword(t *testing.T) {
 
+	// Arrange
 	target := NewHashService()
-
 	pwd := faker.Internet().Password(4, 20)
+
+	// Act
 	actual, err := target.HashAndSalt(pwd)
 
+	// Assert
 	assert.Nil(t, err)
 	assert.NotNil(t, actual)
 	assert.NotEmpty(t, actual)
 }
 
-func Test_ComparePasswords_WithCorrectData_Returns_True(t *testing.T) {
+func Test_CompareHashAndPassword_WithCorrectData_Returns_True(t *testing.T) {
 
+	// Arrange
 	target := NewHashService()
 
 	pwd := faker.Internet().Password(4, 20)
@@ -28,19 +32,24 @@ func Test_ComparePasswords_WithCorrectData_Returns_True(t *testing.T) {
 
 	assert.Nil(t, err)
 
+	// Act
 	actual, err := target.CompareHashAndPassword(hshPwd, pwd)
 
+	// Assert
 	assert.True(t, actual)
 	assert.Nil(t, err)
 }
 
-func Test_ComparePasswords_WithInValidData_Returns_False(t *testing.T) {
+func Test_CompareHashAndPassword_WithInValidData_Returns_False(t *testing.T) {
 
+	// Arrange
 	pwds := []string{faker.Internet().Password(4, 20), ""}
 	target := NewHashService()
 
+	// Act
 	hshPwd, err := target.HashAndSalt(faker.Internet().Password(4, 20))
 
+	// Assert
 	for _, pwd := range pwds {
 
 		assert.Nil(t, err)

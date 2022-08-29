@@ -12,13 +12,17 @@ import (
 
 func Test_InitDb_CreatesDb_If_NotExist(t *testing.T) {
 
+	// Arrange
 	const DB_NAME = "go-booking-api-init-db-test"
 	createDb := fmt.Sprintf(SQL_STATEMENT_CREATE_DB, DB_NAME)
 	dbInfo := DbInfo{Host: "localhost", Port: 5432, User: "postgres", Password: "postgres", DbName: DB_NAME, SslMode: "disable", TimeZone: "Europe/London"}
 	var db *gorm.DB
 	target := NewDBService(db)
+
+	// Act
 	db = target.InitDB(dbInfo, gorm.Open, createDb)
 
+	// Assert
 	assert.Nil(t, db.Error)
 	assert.True(t, db.Migrator().HasTable(&models.TicketInventory{}))
 	assert.True(t, db.Migrator().HasTable(&models.Booking{}))
