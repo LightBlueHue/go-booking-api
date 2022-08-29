@@ -1,3 +1,4 @@
+// Package controllers contains api controllers.
 package controllers
 
 import (
@@ -11,11 +12,13 @@ import (
 	"github.com/revel/revel"
 )
 
+// AccountController provides services such as login and register.
 type AccountController struct {
 	*revel.Controller
 	Service services.Service
 }
 
+// Login checks the user credentials and assigns a JWT.
 func (c *AccountController) Login() revel.Result {
 
 	var model requests.LoginRequest
@@ -39,7 +42,7 @@ func (c *AccountController) Login() revel.Result {
 		return c.RenderJSON(resp)
 	}
 
-	if pwdEqual := c.Service.HashService.ComparePasswords(hashedPwd, model.Password); !pwdEqual {
+	if pwdEqual, _ := c.Service.HashService.CompareHashAndPassword(hashedPwd, model.Password); !pwdEqual {
 
 		c.Response.Status = http.StatusBadRequest
 		c.Validation.Errors = append(c.Validation.Errors, &revel.ValidationError{Message: "unknown account", Key: "account"})
@@ -52,6 +55,7 @@ func (c *AccountController) Login() revel.Result {
 	return c.RenderJSON(resp)
 }
 
+// Register registers the user.
 func (c *AccountController) Register() revel.Result {
 
 	var model requests.RegisterRequest
@@ -98,6 +102,7 @@ func (c *AccountController) Register() revel.Result {
 	return c.Result
 }
 
+// IsLoggedIn is a function that checks if the header request has a valid JWT.
 func IsLoggedIn(c *revel.Controller, s services.Service) revel.Result {
 
 	var token string
@@ -131,6 +136,7 @@ func IsLoggedIn(c *revel.Controller, s services.Service) revel.Result {
 	return nil
 }
 
+// GetUser returns the user model if JWT valid
 func GetUser(c *revel.Controller, s services.Service) (*models.User, error) {
 
 	var token string
@@ -160,6 +166,7 @@ func GetUser(c *revel.Controller, s services.Service) (*models.User, error) {
 	return user, nil
 }
 
+// getBearerToken retreives the bearer token / JWT from request header
 func getBearerToken(c *revel.Controller) (string, error) {
 
 	auth := c.Request.Header.Get("Authorization")

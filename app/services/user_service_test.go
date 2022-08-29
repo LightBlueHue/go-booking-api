@@ -41,7 +41,7 @@ func Test_EmailExists_WhenEmailExistsInDb_Returns_True(t *testing.T) {
 	}), &gorm.Config{})
 
 	assert.Nil(t, setupError)
-	target := GetUserService(db)
+	target := NewUserService(db)
 
 	actual := target.EmailExists(email)
 
@@ -67,7 +67,7 @@ func Test_EmailExists_WhenEmailDoesNotExistInDb_Returns_False(t *testing.T) {
 			AddRow(strconv.Itoa(0)))
 
 	assert.Nil(t, setupError)
-	target := GetUserService(db)
+	target := NewUserService(db)
 
 	actual := target.EmailExists(email)
 
@@ -94,7 +94,7 @@ func Test_GetPassword_WhenPasswordExistsInDb_Returns_Password(t *testing.T) {
 			AddRow(pwd))
 
 	assert.Nil(t, setupError)
-	target := GetUserService(db)
+	target := NewUserService(db)
 
 	actual, actualError := target.GetPassword(pwd)
 
@@ -122,7 +122,7 @@ func Test_GetPassword_WhenDbReturnsError_Returns_Error(t *testing.T) {
 		WillReturnError(expectedError)
 
 	assert.Nil(t, setupError)
-	target := GetUserService(db)
+	target := NewUserService(db)
 
 	actualPwd, actualError := target.GetPassword(pwd)
 
@@ -153,7 +153,7 @@ func Test_GetByEmail_WhenEmailExistsInDb_Returns_User(t *testing.T) {
 	}), &gorm.Config{})
 
 	assert.Nil(t, setupError)
-	target := GetUserService(db)
+	target := NewUserService(db)
 
 	actualUser, actualError := target.GetByEmail(email)
 
@@ -179,7 +179,7 @@ func Test_GetByEmail_WhenEmailDoesNotExistInDb_Returns_Error(t *testing.T) {
 		WillReturnError(expectedError)
 
 	assert.Nil(t, setupError)
-	target := GetUserService(db)
+	target := NewUserService(db)
 
 	actualUser, actualError := target.GetByEmail(email)
 
@@ -212,7 +212,7 @@ func Test_GetByToken_WhenUserExistsInDb_Returns_User(t *testing.T) {
 			AddRow("1", utcNow, utcNow, defaultTime, "yac", "yaccadamia", "yac@yac.co", "1"))
 
 	assert.Nil(t, setupError)
-	target := GetUserService(db)
+	target := NewUserService(db)
 
 	actualUser, actualError := target.GetByToken(token, jwts)
 
@@ -245,7 +245,7 @@ func Test_GetByToken_WhenClaimInvalid_Returns_Error(t *testing.T) {
 			AddRow("1", utcNow, utcNow, defaultTime, "yac", "yaccadamia", "yac@yac.co", "1"))
 
 	assert.Nil(t, setupError)
-	target := GetUserService(db)
+	target := NewUserService(db)
 
 	actualUser, actualError := target.GetByToken(token, jwts)
 
@@ -276,7 +276,7 @@ func Test_GetByToken_WhenUserDoesNotExistInDb_Returns_Error(t *testing.T) {
 		WillReturnError(expectedError)
 
 	assert.Nil(t, setupError)
-	target := GetUserService(db)
+	target := NewUserService(db)
 
 	actualUser, actualError := target.GetByToken(token, jwts)
 
@@ -307,7 +307,7 @@ func Test_Save_WhenNoError_Returns_NoError(t *testing.T) {
 	sqlMock.ExpectCommit()
 
 	assert.Nil(t, setupError)
-	target := GetUserService(db)
+	target := NewUserService(db)
 
 	actualError := target.Save(user)
 
@@ -336,7 +336,7 @@ func Test_Save_WhenDbError_Returns_Error(t *testing.T) {
 	sqlMock.ExpectRollback()
 
 	assert.Nil(t, setupError)
-	target := GetUserService(db)
+	target := NewUserService(db)
 
 	actualError := target.Save(user)
 

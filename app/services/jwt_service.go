@@ -27,7 +27,7 @@ type JwtService struct {
 	issure    string
 }
 
-func GetJWTService() IJWTService {
+func NewJWTService() IJWTService {
 
 	return &JwtService{
 		secretKey: getSecretKey(),
@@ -35,6 +35,7 @@ func GetJWTService() IJWTService {
 	}
 }
 
+// GenerateToken creates a jwt.
 func (service *JwtService) GenerateToken(email string, isUser bool) string {
 
 	claims := &authCustomClaims{
@@ -49,7 +50,7 @@ func (service *JwtService) GenerateToken(email string, isUser bool) string {
 	}
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
 
-	//encoded string
+	// encoded string
 	t, err := token.SignedString([]byte(service.secretKey))
 	if err != nil {
 
@@ -58,6 +59,7 @@ func (service *JwtService) GenerateToken(email string, isUser bool) string {
 	return t
 }
 
+// ValidateToken ensures the token is valid.
 func (service *JwtService) ValidateToken(encodedToken string) (*jwt.Token, error) {
 
 	return jwt.Parse(encodedToken, func(token *jwt.Token) (interface{}, error) {
@@ -69,6 +71,7 @@ func (service *JwtService) ValidateToken(encodedToken string) (*jwt.Token, error
 	})
 }
 
+// GetClaim retrieves a claim of the specified type in JwtClaimType
 func (service *JwtService) GetClaim(token string, claimType JwtClaimType) (string, error) {
 
 	jwtToken, err := service.ValidateToken(token)

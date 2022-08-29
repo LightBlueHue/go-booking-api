@@ -66,16 +66,14 @@ var ServicesFilter = func(c *revel.Controller, fc []revel.Filter) {
 		initDB()
 	}
 
-	if ac, ok := c.AppController.(*controllers.AccountController); ok && !ac.Service.IsServiceSet() {
+	if ac, ok := c.AppController.(*controllers.AccountController); ok && !ac.Service.IsServiceInitialized() {
 
-		ds, hs, jwts, rs, us, vs, bs := GetServices()
-		ac.Service.SetServices(ds, hs, jwts, rs, us, vs, bs)
+		ac.Service = services.NewService(db)
 	}
 
-	if bc, ok := c.AppController.(*controllers.BookingController); ok && !bc.Service.IsServiceSet() {
+	if bc, ok := c.AppController.(*controllers.BookingController); ok && !bc.Service.IsServiceInitialized() {
 
-		ds, hs, jwts, rs, us, vs, bs := GetServices()
-		bc.Service.SetServices(ds, hs, jwts, rs, us, vs, bs)
+		bc.Service = services.NewService(db)
 	}
 
 	fc[0](c, fc[1:]) // Execute the next filter stage.
@@ -89,21 +87,17 @@ var ServicesFilter = func(c *revel.Controller, fc []revel.Filter) {
 //	}
 //}
 
-func GetServices() (services.IDBService, services.IHashService, services.IJWTService, services.IResponseService, services.IUserService, services.IValidationService, services.IBookingService) {
+func initDB() {
+
+	dbInfo := newDBInfo()
+	db = services.NewDBService(db).InitDB(dbInfo, gorm.Open, fmt.Sprintf(services.SQL_STATEMENT_CREATE_DB, dbInfo.DbName))
 
 	if db == nil {
 		panic("INIT DB")
 	}
-	return services.GetDBService(db), services.GetHashService(), services.GetJWTService(), services.GetResponseService(), services.GetUserService(db), services.GetValidationService(), services.GetBookingService(db)
 }
 
-func initDB() {
-
-	dbInfo := getDBInfo()
-	db = services.GetDBService(db).InitDB(dbInfo, gorm.Open, fmt.Sprintf(services.SQL_STATEMENT_CREATE_DB, dbInfo.DbName))
-}
-
-func getDBInfo() services.DbInfo {
+func newDBInfo() services.DbInfo {
 
 	dbInfo := services.DbInfo{}
 

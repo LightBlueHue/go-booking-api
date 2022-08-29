@@ -1,3 +1,4 @@
+// Package services contains helper classes.
 package services
 
 import (
@@ -16,11 +17,12 @@ type BookingService struct {
 	db *gorm.DB
 }
 
-func GetBookingService(db *gorm.DB) IBookingService {
+func NewBookingService(db *gorm.DB) IBookingService {
 
 	return &BookingService{db}
 }
 
+// Book books a ticket for the associated user id.
 func (s *BookingService) Book(userId uint, count uint) (uint, error) {
 
 	var bookingId uint
@@ -34,6 +36,7 @@ func (s *BookingService) Book(userId uint, count uint) (uint, error) {
 	return bookingId, result.Error
 }
 
+// GetBookings returns tickets booked for the associated user id.
 func (s *BookingService) GetBookings(userId uint) (*[]models.Booking, error) {
 
 	var bookings *[]models.Booking

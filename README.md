@@ -62,7 +62,7 @@ go tool cover -html="prof.out"
 
 PgAdmin should be available on http://localhost:4000/
 
-To connect pgAdmin to your postgress server, run the following in cmd to find your container ip:
+To connect pgAdmin to your postgres server, run the following in cmd to find your container ip:
 
         docker network inspect bridge
 

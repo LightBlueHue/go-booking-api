@@ -16,7 +16,7 @@ func Test_InitDb_CreatesDb_If_NotExist(t *testing.T) {
 	createDb := fmt.Sprintf(SQL_STATEMENT_CREATE_DB, DB_NAME)
 	dbInfo := DbInfo{Host: "localhost", Port: 5432, User: "postgres", Password: "postgres", DbName: DB_NAME, SslMode: "disable", TimeZone: "Europe/London"}
 	var db *gorm.DB
-	target := GetDBService(db)
+	target := NewDBService(db)
 	db = target.InitDB(dbInfo, gorm.Open, createDb)
 
 	assert.Nil(t, db.Error)

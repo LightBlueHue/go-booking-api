@@ -12,7 +12,7 @@ import (
 
 func Test_CreateErrorResponse_Returns_ErrorResponse(t *testing.T) {
 
-	target := GetResponseService()
+	target := NewResponseService()
 	code := faker.RandomInt(100, 599)
 	message1 := strings.Join(faker.Lorem().Words(10), " ")
 	message2 := strings.Join(faker.Lorem().Words(10), " ")
@@ -35,7 +35,7 @@ func Test_CreateErrorResponse_Returns_ErrorResponse(t *testing.T) {
 
 func Test_CreateErrorResponse_WithEmptyValidation_Returns_ErrorResponse(t *testing.T) {
 
-	target := GetResponseService()
+	target := NewResponseService()
 	code := faker.RandomInt(100, 599)
 	message1 := strings.Join(faker.Lorem().Words(10), " ")
 	ve := []*revel.ValidationError{}
@@ -49,7 +49,7 @@ func Test_CreateErrorResponse_WithEmptyValidation_Returns_ErrorResponse(t *testi
 
 func Test_CreateOperationResponse_Returns_OperationResponse(t *testing.T) {
 
-	target := GetResponseService()
+	target := NewResponseService()
 	context := faker.RandomString(5)
 	value := faker.RandomString(5)
 

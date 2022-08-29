@@ -34,7 +34,7 @@ func Test_Book_WhenNoError_Returns_BookingId(t *testing.T) {
 			AddRow(expectedBookingId))
 
 	assert.Nil(t, setupError)
-	target := GetBookingService(db)
+	target := NewBookingService(db)
 
 	actualBookingId, actualError := target.Book(userId, count)
 
@@ -62,7 +62,7 @@ func Test_Book_WhenDbError_Returns_Error(t *testing.T) {
 		WillReturnError(expectedError)
 
 	assert.Nil(t, setupError)
-	target := GetBookingService(db)
+	target := NewBookingService(db)
 
 	actualBookingId, actualError := target.Book(userId, count)
 
@@ -91,7 +91,7 @@ func Test_Book_WhenDbBookingIdZero_Returns_Error(t *testing.T) {
 			AddRow(0))
 
 	assert.Nil(t, setupError)
-	target := GetBookingService(db)
+	target := NewBookingService(db)
 
 	actualBookingId, actualError := target.Book(userId, count)
 
@@ -119,7 +119,7 @@ func Test_GetBookings_WhenNoError_Returns_Bookings(t *testing.T) {
 			AddRow(expectedBookings[0].UserID, expectedBookings[0].TicketInventoryID, expectedBookings[0].Tickets))
 
 	assert.Nil(t, setupError)
-	target := GetBookingService(db)
+	target := NewBookingService(db)
 
 	actualBookings, actualError := target.GetBookings(userId)
 
@@ -137,7 +137,7 @@ func Test_GetBookings_WhenDbError_Returns_Error(t *testing.T) {
 	db, setupError = gorm.Open(postgres.New(postgres.Config{
 		Conn: sqlDb,
 	}), &gorm.Config{})
-	
+
 	userId := uint(faker.RandomInt(0, 100))
 	expectedError := errors.New("sb")
 
@@ -146,7 +146,7 @@ func Test_GetBookings_WhenDbError_Returns_Error(t *testing.T) {
 		WillReturnError(expectedError)
 
 	assert.Nil(t, setupError)
-	target := GetBookingService(db)
+	target := NewBookingService(db)
 
 	actualBookings, actualError := target.GetBookings(userId)
 

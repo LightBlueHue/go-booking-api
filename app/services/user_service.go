@@ -16,11 +16,12 @@ type UserService struct {
 	db *gorm.DB
 }
 
-func GetUserService(db *gorm.DB) IUserService {
+func NewUserService(db *gorm.DB) IUserService {
 
 	return &UserService{db}
 }
 
+// EmailExists returns true if email exists in database.
 func (s *UserService) EmailExists(email string) bool {
 
 	var count int
@@ -28,6 +29,7 @@ func (s *UserService) EmailExists(email string) bool {
 	return count > 0
 }
 
+// GetPassword retrieves hashed password from database.
 func (s *UserService) GetPassword(email string) (string, error) {
 
 	var pwd string
@@ -35,12 +37,14 @@ func (s *UserService) GetPassword(email string) (string, error) {
 	return pwd, result.Error
 }
 
+// Save stores a user in the database.
 func (s *UserService) Save(user *models.User) error {
 
 	result := s.db.Create(user)
 	return result.Error
 }
 
+// GetByEmail retrieves a user by the provided email address.
 func (s *UserService) GetByEmail(email string) (*models.User, error) {
 
 	var user models.User
@@ -54,6 +58,7 @@ func (s *UserService) GetByEmail(email string) (*models.User, error) {
 	return &user, result.Error
 }
 
+// GetByToken retrieves a user by the provided jwt.
 func (s *UserService) GetByToken(token string, jwtService IJWTService) (*models.User, error) {
 
 	var user *models.User
