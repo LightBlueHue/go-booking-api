@@ -1,8 +1,9 @@
-package services
+package services_test
 
 import (
 	"errors"
 	"go-booking-api/app/models"
+	"go-booking-api/app/services"
 	"regexp"
 	"testing"
 
@@ -35,7 +36,7 @@ func Test_Book_WhenNoError_Returns_BookingId(t *testing.T) {
 			AddRow(expectedBookingId))
 
 	assert.Nil(t, setupError)
-	target := NewBookingService(db)
+	target := services.NewBookingService(db)
 
 	// Act
 	actualBookingId, actualError := target.Book(userId, count)
@@ -66,7 +67,7 @@ func Test_Book_WhenDbError_Returns_Error(t *testing.T) {
 		WillReturnError(expectedError)
 
 	assert.Nil(t, setupError)
-	target := NewBookingService(db)
+	target := services.NewBookingService(db)
 
 	// Act
 	actualBookingId, actualError := target.Book(userId, count)
@@ -98,7 +99,7 @@ func Test_Book_WhenDbBookingIdZero_Returns_Error(t *testing.T) {
 			AddRow(0))
 
 	assert.Nil(t, setupError)
-	target := NewBookingService(db)
+	target := services.NewBookingService(db)
 
 	// Act
 	actualBookingId, actualError := target.Book(userId, count)
@@ -129,7 +130,7 @@ func Test_GetBookings_WhenNoError_Returns_Bookings(t *testing.T) {
 			AddRow(expectedBookings[0].UserID, expectedBookings[0].TicketInventoryID, expectedBookings[0].Tickets))
 
 	assert.Nil(t, setupError)
-	target := NewBookingService(db)
+	target := services.NewBookingService(db)
 
 	// Act
 	actualBookings, actualError := target.GetBookings(userId)
@@ -159,7 +160,7 @@ func Test_GetBookings_WhenDbError_Returns_Error(t *testing.T) {
 		WillReturnError(expectedError)
 
 	assert.Nil(t, setupError)
-	target := NewBookingService(db)
+	target := services.NewBookingService(db)
 
 	// Act
 	actualBookings, actualError := target.GetBookings(userId)

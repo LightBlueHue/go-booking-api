@@ -1,6 +1,7 @@
-package services
+package services_test
 
 import (
+	"go-booking-api/app/services"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
@@ -10,7 +11,7 @@ import (
 func Test_HashAndSalt_ValidPassword_Returns_HashedPassword(t *testing.T) {
 
 	// Arrange
-	target := NewHashService()
+	target := services.NewHashService()
 	pwd := faker.Internet().Password(4, 20)
 
 	// Act
@@ -25,7 +26,7 @@ func Test_HashAndSalt_ValidPassword_Returns_HashedPassword(t *testing.T) {
 func Test_CompareHashAndPassword_WithCorrectData_Returns_True(t *testing.T) {
 
 	// Arrange
-	target := NewHashService()
+	target := services.NewHashService()
 
 	pwd := faker.Internet().Password(4, 20)
 	hshPwd, err := target.HashAndSalt(pwd)
@@ -44,7 +45,7 @@ func Test_CompareHashAndPassword_WithInValidData_Returns_False(t *testing.T) {
 
 	// Arrange
 	pwds := []string{faker.Internet().Password(4, 20), ""}
-	target := NewHashService()
+	target := services.NewHashService()
 
 	// Act
 	hshPwd, err := target.HashAndSalt(faker.Internet().Password(4, 20))

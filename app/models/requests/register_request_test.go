@@ -1,6 +1,7 @@
-package requests
+package requests_test
 
 import (
+	"go-booking-api/app/models/requests"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
@@ -17,7 +18,7 @@ func TestRegisterRequest_Behaves_Correctly(t *testing.T) {
 	expectedConfirmPassword := faker.Internet().Password(4, 20)
 
 	// Act
-	actual := RegisterRequest{FirstName: expectedFirstName, LastName: expectedLastName, Email: expectedEmail, Password: expectedPassword, ConfirmPassword: expectedConfirmPassword}
+	actual := requests.RegisterRequest{FirstName: expectedFirstName, LastName: expectedLastName, Email: expectedEmail, Password: expectedPassword, ConfirmPassword: expectedConfirmPassword}
 
 	// Assert
 	assert.Equal(t, expectedFirstName, actual.FirstName)

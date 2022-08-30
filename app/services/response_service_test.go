@@ -1,6 +1,7 @@
-package services
+package services_test
 
 import (
+	"go-booking-api/app/services"
 	"strconv"
 	"strings"
 	"testing"
@@ -13,7 +14,7 @@ import (
 func Test_CreateErrorResponse_Returns_ErrorResponse(t *testing.T) {
 
 	// Arrange
-	target := NewResponseService()
+	target := services.NewResponseService()
 	code := faker.RandomInt(100, 599)
 	message1 := strings.Join(faker.Lorem().Words(10), " ")
 	message2 := strings.Join(faker.Lorem().Words(10), " ")
@@ -39,7 +40,7 @@ func Test_CreateErrorResponse_Returns_ErrorResponse(t *testing.T) {
 func Test_CreateErrorResponse_WithEmptyValidation_Returns_ErrorResponse(t *testing.T) {
 
 	// Arrange
-	target := NewResponseService()
+	target := services.NewResponseService()
 	code := faker.RandomInt(100, 599)
 	message1 := strings.Join(faker.Lorem().Words(10), " ")
 	ve := []*revel.ValidationError{}
@@ -56,7 +57,7 @@ func Test_CreateErrorResponse_WithEmptyValidation_Returns_ErrorResponse(t *testi
 func Test_CreateOperationResponse_Returns_OperationResponse(t *testing.T) {
 
 	// Arrange
-	target := NewResponseService()
+	target := services.NewResponseService()
 	context := faker.RandomString(5)
 	value := faker.RandomString(5)
 

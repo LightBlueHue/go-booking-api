@@ -1,8 +1,9 @@
-package services
+package services_test
 
 import (
 	"errors"
 	"go-booking-api/app/models"
+	"go-booking-api/app/services"
 	"regexp"
 	"strconv"
 	"testing"
@@ -42,7 +43,7 @@ func Test_EmailExists_WhenEmailExistsInDb_Returns_True(t *testing.T) {
 	}), &gorm.Config{})
 
 	assert.Nil(t, setupError)
-	target := NewUserService(db)
+	target := services.NewUserService(db)
 
 	// Act
 	actual := target.EmailExists(email)
@@ -71,7 +72,7 @@ func Test_EmailExists_WhenEmailDoesNotExistInDb_Returns_False(t *testing.T) {
 			AddRow(strconv.Itoa(0)))
 
 	assert.Nil(t, setupError)
-	target := NewUserService(db)
+	target := services.NewUserService(db)
 
 	// Act
 	actual := target.EmailExists(email)
@@ -101,7 +102,7 @@ func Test_GetPassword_WhenPasswordExistsInDb_Returns_Password(t *testing.T) {
 			AddRow(pwd))
 
 	assert.Nil(t, setupError)
-	target := NewUserService(db)
+	target := services.NewUserService(db)
 
 	// Act
 	actual, actualError := target.GetPassword(pwd)
@@ -132,7 +133,7 @@ func Test_GetPassword_WhenDbReturnsError_Returns_Error(t *testing.T) {
 		WillReturnError(expectedError)
 
 	assert.Nil(t, setupError)
-	target := NewUserService(db)
+	target := services.NewUserService(db)
 
 	// Act
 	actualPwd, actualError := target.GetPassword(pwd)
@@ -166,7 +167,7 @@ func Test_GetByEmail_WhenEmailExistsInDb_Returns_User(t *testing.T) {
 	}), &gorm.Config{})
 
 	assert.Nil(t, setupError)
-	target := NewUserService(db)
+	target := services.NewUserService(db)
 
 	// Act
 	actualUser, actualError := target.GetByEmail(email)
@@ -195,7 +196,7 @@ func Test_GetByEmail_WhenEmailDoesNotExistInDb_Returns_Error(t *testing.T) {
 		WillReturnError(expectedError)
 
 	assert.Nil(t, setupError)
-	target := NewUserService(db)
+	target := services.NewUserService(db)
 
 	// Act
 	actualUser, actualError := target.GetByEmail(email)
@@ -223,7 +224,7 @@ func Test_GetByToken_WhenUserExistsInDb_Returns_User(t *testing.T) {
 	utcNow := time.Now().UTC()
 	token := faker.RandomString(20)
 	expectedUser := &models.User{FirstName: "yac", LastName: "yaccadamia", Email: "yac@yac.co", CredentialID: 1}
-	jwts.On("GetClaim", token, EMAIL_CLAIM).Return(expectedUser.Email, nil)
+	jwts.On("GetClaim", token, services.EMAIL_CLAIM).Return(expectedUser.Email, nil)
 
 	sqlMock.ExpectQuery(regexp.QuoteMeta("")).
 		WithArgs(expectedUser.Email).
@@ -231,7 +232,7 @@ func Test_GetByToken_WhenUserExistsInDb_Returns_User(t *testing.T) {
 			AddRow("1", utcNow, utcNow, defaultTime, expectedUser.FirstName, expectedUser.LastName, expectedUser.Email, expectedUser.CredentialID))
 
 	assert.Nil(t, setupError)
-	target := NewUserService(db)
+	target := services.NewUserService(db)
 
 	// Act
 	actualUser, actualError := target.GetByToken(token, jwts)
@@ -263,7 +264,7 @@ func Test_GetByToken_WhenClaimInvalid_Returns_Error(t *testing.T) {
 	token := faker.RandomString(20)
 	expectedError := errors.New("my error")
 	email := ""
-	jwts.On("GetClaim", token, EMAIL_CLAIM).Return(email, expectedError)
+	jwts.On("GetClaim", token, services.EMAIL_CLAIM).Return(email, expectedError)
 
 	sqlMock.ExpectQuery(regexp.QuoteMeta("")).
 		WithArgs(email).
@@ -271,7 +272,7 @@ func Test_GetByToken_WhenClaimInvalid_Returns_Error(t *testing.T) {
 			AddRow("1", utcNow, utcNow, defaultTime, "yac", "yaccadamia", "yac@yac.co", "1"))
 
 	assert.Nil(t, setupError)
-	target := NewUserService(db)
+	target := services.NewUserService(db)
 
 	// Act
 	actualUser, actualError := target.GetByToken(token, jwts)
@@ -297,7 +298,7 @@ func Test_GetByToken_WhenUserDoesNotExistInDb_Returns_Error(t *testing.T) {
 	var jwts = newMockJWTService(t)
 	token := faker.RandomString(20)
 	email := faker.Internet().Email()
-	jwts.On("GetClaim", token, EMAIL_CLAIM).Return(email, nil)
+	jwts.On("GetClaim", token, services.EMAIL_CLAIM).Return(email, nil)
 	expectedError := errors.New("my error")
 
 	sqlMock.ExpectQuery(regexp.QuoteMeta("")).
@@ -305,7 +306,7 @@ func Test_GetByToken_WhenUserDoesNotExistInDb_Returns_Error(t *testing.T) {
 		WillReturnError(expectedError)
 
 	assert.Nil(t, setupError)
-	target := NewUserService(db)
+	target := services.NewUserService(db)
 
 	// Act
 	actualUser, actualError := target.GetByToken(token, jwts)
@@ -339,7 +340,7 @@ func Test_Save_WhenNoError_Returns_NoError(t *testing.T) {
 	sqlMock.ExpectCommit()
 
 	assert.Nil(t, setupError)
-	target := NewUserService(db)
+	target := services.NewUserService(db)
 
 	// Act
 	actualError := target.Save(user)
@@ -371,7 +372,7 @@ func Test_Save_WhenDbError_Returns_Error(t *testing.T) {
 	sqlMock.ExpectRollback()
 
 	assert.Nil(t, setupError)
-	target := NewUserService(db)
+	target := services.NewUserService(db)
 
 	// Act
 	actualError := target.Save(user)
@@ -381,18 +382,18 @@ func Test_Save_WhenDbError_Returns_Error(t *testing.T) {
 	assert.Equal(t, expectedError, actualError)
 }
 
-func (m *mockJWTService) GetClaim(token string, claimType JwtClaimType) (string, error) {
+func (m *mockJWTService) GetClaim(token string, claimType services.JwtClaimType) (string, error) {
 	ret := m.Called(token, claimType)
 
 	var r0 string
-	if rf, ok := ret.Get(0).(func(string, JwtClaimType) string); ok {
+	if rf, ok := ret.Get(0).(func(string, services.JwtClaimType) string); ok {
 		r0 = rf(token, claimType)
 	} else {
 		r0 = ret.Get(0).(string)
 	}
 
 	var r1 error
-	if rf, ok := ret.Get(1).(func(string, JwtClaimType) error); ok {
+	if rf, ok := ret.Get(1).(func(string, services.JwtClaimType) error); ok {
 		r1 = rf(token, claimType)
 	} else {
 		r1 = ret.Error(1)

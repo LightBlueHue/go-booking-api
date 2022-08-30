@@ -30,7 +30,7 @@ type JwtService struct {
 func NewJWTService() IJWTService {
 
 	return &JwtService{
-		secretKey: getSecretKey(),
+		secretKey: GetSecretKey(),
 		issure:    "go-booking-api",
 	}
 }
@@ -92,7 +92,7 @@ func (service *JwtService) GetClaim(token string, claimType JwtClaimType) (strin
 	return "", fmt.Errorf("Unable to retrieve claim")
 }
 
-func getSecretKey() string {
+func GetSecretKey() string {
 
 	secret := os.Getenv(GO_BOOKING_API_SECRET)
 	if secret == "" {
