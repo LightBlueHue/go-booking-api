@@ -10,13 +10,13 @@ import (
 func TestLoginRequest_Behaves_Correctly(t *testing.T) {
 
 	// Arrange
-	expectedEmail:= faker.Internet().Email()
-	expectedPassword:=faker.Internet().Password(4,20)
-	
+	expectedEmail := faker.Internet().Email()
+	expectedPassword := faker.Internet().Password(4, 20)
+
 	// Act
-	target:= &LoginRequest{Email: expectedEmail,Password: expectedPassword}
+	actual := &LoginRequest{Email: expectedEmail, Password: expectedPassword}
 
 	// Assert
-	assert.Equal(t,expectedEmail, target.Email)
-	assert.Equal(t,expectedPassword, target.Password)
+	assert.Equal(t, expectedEmail, actual.Email)
+	assert.Equal(t, expectedPassword, actual.Password)
 }
