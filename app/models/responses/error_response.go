@@ -1,6 +1,6 @@
 package responses
 
-// ErrorResponse contains response information about an error that occured for a request.
+// ErrorResponse contains response information about an error that occurred for a request.
 type ErrorResponse struct {
 	Error Error `json:"error"`
 }
@@ -13,7 +13,7 @@ type Error struct {
 	Details []ErrorDetail `json:"details"`
 }
 
-// ErrorDetail conatins detailed error information.
+// ErrorDetail contains detailed error information.
 type ErrorDetail struct {
 	Code    string `json:"code"`
 	Message string `json:"message"`
