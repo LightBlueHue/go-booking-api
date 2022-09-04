@@ -1,7 +1,8 @@
-package services
+package services_test
 
 import (
 	"go-booking-api/app/models/requests"
+	"go-booking-api/app/services"
 	"os"
 	"testing"
 
@@ -12,27 +13,31 @@ import (
 
 func Test_ValidateLoginRequest_WhenEmailInValid_Returns_Error(t *testing.T) {
 
-	target := GetValidationService()
-	rv := createValidation()
+	// Arrange
+	target := services.NewValidationService()
 	requests := []requests.LoginRequest{
 		{Email: "faker.Internet().Email()", Password: faker.Internet().Password(4, 20)},
 		{Email: "", Password: faker.Internet().Password(4, 20)},
 		{Email: "ya.com", Password: faker.Internet().Password(4, 20)},
 	}
 
-	for i, request := range requests {
+	for _, request := range requests {
 
+		rv := createValidation()
+
+		// Act
 		target.ValidateLoginRequest(rv, &request)
 
+		// Assert
 		assert.True(t, rv.HasErrors())
-		assert.Contains(t, rv.Errors[i].Message, "email")
+		assert.Contains(t, rv.Errors[0].Message, "email")
 	}
 }
 
 func Test_ValidateLoginRequest_WhenEmailValid_Returns_NoError(t *testing.T) {
 
-	target := GetValidationService()
-	rv := createValidation()
+	// Arrange
+	target := services.NewValidationService()
 	requests := []requests.LoginRequest{
 		{Email: faker.Internet().Email(), Password: faker.Internet().Password(4, 20)},
 		{Email: faker.Internet().FreeEmail(), Password: faker.Internet().Password(4, 20)},
@@ -41,15 +46,20 @@ func Test_ValidateLoginRequest_WhenEmailValid_Returns_NoError(t *testing.T) {
 
 	for _, request := range requests {
 
+		rv := createValidation()
+
+		// Act
 		target.ValidateLoginRequest(rv, &request)
 
+		// Assert
 		assert.False(t, rv.HasErrors())
 	}
 }
 
 func Test_ValidateLoginRequest_WhenPasswordInValid_Returns_Error(t *testing.T) {
 
-	target := GetValidationService()
+	// Arrange
+	target := services.NewValidationService()
 	requests := []requests.LoginRequest{
 		{Email: faker.Internet().Email(), Password: faker.Internet().Password(0, 0)},
 		{Email: faker.Internet().Email(), Password: faker.Internet().Password(0, 3)},
@@ -59,17 +69,20 @@ func Test_ValidateLoginRequest_WhenPasswordInValid_Returns_Error(t *testing.T) {
 	for _, request := range requests {
 
 		rv := createValidation()
+
+		// Act
 		target.ValidateLoginRequest(rv, &request)
 
+		// Assert
 		assert.True(t, rv.HasErrors())
-		assert.Equal(t, VALIDATION_REQUEST_PASSWORD_LENGTH, rv.Errors[0].Message)
+		assert.Equal(t, services.VALIDATION_REQUEST_PASSWORD_LENGTH, rv.Errors[0].Message)
 	}
 }
 
 func Test_ValidateLoginRequest_WhenPasswordValid_Returns_NoError(t *testing.T) {
 
-	target := GetValidationService()
-	rv := createValidation()
+	// Arrange
+	target := services.NewValidationService()
 	requests := []requests.LoginRequest{
 		{Email: faker.Internet().Email(), Password: faker.Internet().Password(4, 4)},
 		{Email: faker.Internet().Email(), Password: faker.Internet().Password(4, 20)},
@@ -79,15 +92,20 @@ func Test_ValidateLoginRequest_WhenPasswordValid_Returns_NoError(t *testing.T) {
 
 	for _, request := range requests {
 
+		rv := createValidation()
+
+		// Act
 		target.ValidateLoginRequest(rv, &request)
 
+		// Assert
 		assert.False(t, rv.HasErrors())
 	}
 }
 
 func Test_ValidateRegisterRequest_WhenFirstNameInValid_Returns_Error(t *testing.T) {
 
-	target := GetValidationService()
+	// Arrange
+	target := services.NewValidationService()
 	rv := createValidation()
 	pwd := faker.Internet().Password(4, 20)
 	request := requests.RegisterRequest{
@@ -98,15 +116,18 @@ func Test_ValidateRegisterRequest_WhenFirstNameInValid_Returns_Error(t *testing.
 		ConfirmPassword: pwd,
 	}
 
+	// Act
 	target.ValidateRegisterRequest(rv, &request)
 
+	// Assert
 	assert.True(t, rv.HasErrors())
-	assert.Equal(t, VALIDATION_REGISTER_REQUEST_FIRSTNAME_INVALID, rv.Errors[0].Message)
+	assert.Equal(t, services.VALIDATION_REGISTER_REQUEST_FIRSTNAME_INVALID, rv.Errors[0].Message)
 }
 
 func Test_ValidateRegisterRequest_WhenLastNameInValid_Returns_Error(t *testing.T) {
 
-	target := GetValidationService()
+	// Arrange
+	target := services.NewValidationService()
 	rv := createValidation()
 	pwd := faker.Internet().Password(4, 20)
 	request := requests.RegisterRequest{
@@ -117,16 +138,18 @@ func Test_ValidateRegisterRequest_WhenLastNameInValid_Returns_Error(t *testing.T
 		ConfirmPassword: pwd,
 	}
 
+	// Act
 	target.ValidateRegisterRequest(rv, &request)
 
+	// Assert
 	assert.True(t, rv.HasErrors())
-	assert.Equal(t, VALIDATION_REGISTER_REQUEST_LASTNAME_INVALID, rv.Errors[0].Message)
+	assert.Equal(t, services.VALIDATION_REGISTER_REQUEST_LASTNAME_INVALID, rv.Errors[0].Message)
 }
 
 func Test_ValidateRegisterRequest_WhenEmailInValid_Returns_Error(t *testing.T) {
 
-	target := GetValidationService()
-	rv := createValidation()
+	// Arrange
+	target := services.NewValidationService()
 	pwd := faker.Internet().Password(4, 20)
 	firstName := faker.Name().FirstName()
 	lastName := faker.Name().LastName()
@@ -136,20 +159,24 @@ func Test_ValidateRegisterRequest_WhenEmailInValid_Returns_Error(t *testing.T) {
 		{FirstName: firstName, LastName: lastName, Email: "ya.com", Password: pwd, ConfirmPassword: pwd},
 	}
 
-	for i, request := range requests {
+	for _, request := range requests {
 
+		rv := createValidation()
+
+		// Act
 		target.ValidateRegisterRequest(rv, &request)
 
+		// Assert
 		assert.True(t, rv.HasErrors())
-		assert.Contains(t, rv.Errors[i].Message, "email")
+		assert.Contains(t, rv.Errors[0].Message, "email")
 	}
 }
 
 func Test_ValidateRegisterRequest_WhenPasswordInValid_Returns_Error(t *testing.T) {
 
-	os.Setenv(GO_BOOKING_API_SECRET, "E59DD115760893782F7FB8CC6C387DE86FFEC3C186A8EFE24184E9CABDB2EFC3")
-	target := GetValidationService()
-	rv := createValidation()
+	// Arrange
+	os.Setenv(services.GO_BOOKING_API_SECRET, "E59DD115760893782F7FB8CC6C387DE86FFEC3C186A8EFE24184E9CABDB2EFC3")
+	target := services.NewValidationService()
 	email := faker.Internet().Email()
 	pwd1 := faker.Internet().Password(0, 0)
 	pwd2 := faker.Internet().Password(0, 3)
@@ -163,19 +190,23 @@ func Test_ValidateRegisterRequest_WhenPasswordInValid_Returns_Error(t *testing.T
 		{FirstName: firstName, LastName: lastName, Email: email, Password: pwd3, ConfirmPassword: pwd3},
 	}
 
-	for i, request := range requests {
+	for _, request := range requests {
 
+		rv := createValidation()
+
+		// Act
 		target.ValidateRegisterRequest(rv, &request)
 
+		// Assert
 		assert.True(t, rv.HasErrors())
-		assert.Equal(t, VALIDATION_REQUEST_PASSWORD_LENGTH, rv.Errors[i].Message)
+		assert.Equal(t, services.VALIDATION_REQUEST_PASSWORD_LENGTH, rv.Errors[0].Message)
 	}
 }
 
 func Test_ValidateRegisterRequest_WhenPasswordsDoNotMatch_Returns_Error(t *testing.T) {
 
-	target := GetValidationService()
-	rv := createValidation()
+	// Arrange
+	target := services.NewValidationService()
 	email := faker.Internet().Email()
 	pwd := faker.Internet().Password(4, 6)
 	confPwd1 := faker.Internet().Password(0, 0)
@@ -190,33 +221,43 @@ func Test_ValidateRegisterRequest_WhenPasswordsDoNotMatch_Returns_Error(t *testi
 		{FirstName: firstName, LastName: lastName, Email: email, Password: pwd, ConfirmPassword: confPwd3},
 	}
 
-	for i, request := range requests {
+	for _, request := range requests {
 
+		rv := createValidation()
+
+		// Act
 		target.ValidateRegisterRequest(rv, &request)
 
+		// Assert
 		assert.True(t, rv.HasErrors())
-		assert.Equal(t, VALIDATION_REGISTER_REQUEST_PASSWORD_NOMATCH, rv.Errors[i].Message)
+		assert.Equal(t, services.VALIDATION_REGISTER_REQUEST_PASSWORD_NOMATCH, rv.Errors[0].Message)
 	}
 }
 
 func Test_ValidateBookingRequest_WhenNumberInValid_Returns_Error(t *testing.T) {
 
-	target := GetValidationService()
+	// Arrange
+	target := services.NewValidationService()
 	rv := createValidation()
 
+	// Act
 	target.ValidateBookingRequest(rv, 0)
 
+	// Assert
 	assert.True(t, rv.HasErrors())
-	assert.Equal(t, VALIDATION_BOOKING_REQUEST_VALID_NUMBER, rv.Errors[0].Message)
+	assert.Equal(t, services.VALIDATION_BOOKING_REQUEST_VALID_NUMBER, rv.Errors[0].Message)
 }
 
 func Test_ValidateBookingRequest_WhenNumberValid_Returns_NoError(t *testing.T) {
 
-	target := GetValidationService()
+	// Arrange
+	target := services.NewValidationService()
 	rv := createValidation()
 
+	// Act
 	target.ValidateBookingRequest(rv, uint(faker.RandomInt(1, 1000)))
 
+	// Assert
 	assert.False(t, rv.HasErrors())
 }
 

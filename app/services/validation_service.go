@@ -20,7 +20,7 @@ const (
 type ValidationService struct {
 }
 
-func GetValidationService() IValidationService {
+func NewValidationService() IValidationService {
 
 	return &ValidationService{}
 }

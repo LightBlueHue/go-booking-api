@@ -22,7 +22,7 @@ type Service struct {
 
 func NewService(db *gorm.DB) Service {
 
-	return Service{DBService: NewDBService(db), HashService: NewHashService(), JWTService: NewJWTService(), ResponseService: NewResponseService(), UserService: NewUserService(db), ValidationService: GetValidationService(), BookingService: NewBookingService(db)}
+	return Service{DBService: NewDBService(db), HashService: NewHashService(), JWTService: NewJWTService(), ResponseService: NewResponseService(), UserService: NewUserService(db), ValidationService: NewValidationService(), BookingService: NewBookingService(db)}
 }
 
 // IsServiceInitialized returns true if all services are initialized.

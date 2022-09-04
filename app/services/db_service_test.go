@@ -1,8 +1,9 @@
-package services
+package services_test
 
 import (
 	"fmt"
 	"go-booking-api/app/models"
+	"go-booking-api/app/services"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
@@ -12,13 +13,17 @@ import (
 
 func Test_InitDb_CreatesDb_If_NotExist(t *testing.T) {
 
+	// Arrange
 	const DB_NAME = "go-booking-api-init-db-test"
-	createDb := fmt.Sprintf(SQL_STATEMENT_CREATE_DB, DB_NAME)
-	dbInfo := DbInfo{Host: "localhost", Port: 5432, User: "postgres", Password: "postgres", DbName: DB_NAME, SslMode: "disable", TimeZone: "Europe/London"}
+	createDb := fmt.Sprintf(services.SQL_STATEMENT_CREATE_DB, DB_NAME)
+	dbInfo := services.DbInfo{Host: "localhost", Port: 5432, User: "postgres", Password: "postgres", DbName: DB_NAME, SslMode: "disable", TimeZone: "Europe/London"}
 	var db *gorm.DB
-	target := NewDBService(db)
+	target := services.NewDBService(db)
+
+	// Act
 	db = target.InitDB(dbInfo, gorm.Open, createDb)
 
+	// Assert
 	assert.Nil(t, db.Error)
 	assert.True(t, db.Migrator().HasTable(&models.TicketInventory{}))
 	assert.True(t, db.Migrator().HasTable(&models.Booking{}))
@@ -31,7 +36,7 @@ func Test_InitDb_CreatesDb_If_NotExist(t *testing.T) {
 	cleanUp(dbInfo)
 }
 
-func cleanUp(dbInfo DbInfo) {
+func cleanUp(dbInfo services.DbInfo) {
 
 	conn := fmt.Sprintf("host=%s user=%s password=%s port=%d sslmode=%s TimeZone=%s", dbInfo.Host, dbInfo.User, dbInfo.Password, dbInfo.Port, dbInfo.SslMode, dbInfo.TimeZone)
 
