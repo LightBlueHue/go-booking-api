@@ -42,6 +42,13 @@ const (
 		END 
 	$body$
 	LANGUAGE plpgsql`
+	ERROR_TICKET_INVENTORY_TABLE_CREATION              = "Error creating ticket inventory table"
+	ERROR_TICKET_INVENTORY_TABLE_INSERTION             = "Error inserting into ticket inventory table"
+	ERROR_BOOKING_TABLE_CREATION                       = "Error creating booking table"
+	ERROR_CREDENTIALS_TABLE_CREATION                   = "Error creating credentials table"
+	ERROR_USER_TABLE_CREATION                          = "Error creating user table"
+	ERROR_EXECUTING_SQL_STATEMENT_CREATE_BOOK_FUNCTION = "Error executing create book sql function"
+	ERROR_FAILED_TO_CONNECT_TO_DATABASE                = "Error failed to connect to database"
 )
 
 type DBService struct {
@@ -85,7 +92,7 @@ func (s *DBService) InitDB(dbInfo DbInfo, open DbInitializer, createDbStatement 
 
 		if dbResult = s.db.Exec(createDbStatement); dbResult.Error != nil {
 
-			panic("failed to connect database")
+			panic(ERROR_FAILED_TO_CONNECT_TO_DATABASE)
 		}
 
 		s.db, err = gorm.Open(postgres.New(postgres.Config{
@@ -99,33 +106,33 @@ func (s *DBService) InitDB(dbInfo DbInfo, open DbInitializer, createDbStatement 
 
 		if err = s.db.AutoMigrate(&models.TicketInventory{}); err != nil {
 
-			panic("ite")
+			panic(ERROR_TICKET_INVENTORY_TABLE_CREATION)
 		}
 
 		if err = s.db.AutoMigrate(&models.Booking{}); err != nil {
 
-			panic("bte")
+			panic(ERROR_BOOKING_TABLE_CREATION)
 		}
 
 		if dbResult = s.db.Create(&models.TicketInventory{AvailableTickets: 50, TotalTickets: 50, Name: "JusticeLeagueLive", Description: "Justice League Live"}); dbResult.Error != nil {
 
-			panic("ipe")
+			panic(ERROR_TICKET_INVENTORY_TABLE_INSERTION)
 		}
 
 		if dbResult = s.db.Exec(SQL_STATEMENT_CREATE_BOOK_FUNCTION); dbResult.Error != nil {
 
-			panic("utcbf")
+			panic(ERROR_EXECUTING_SQL_STATEMENT_CREATE_BOOK_FUNCTION)
 		}
 	}
 
 	if err = s.db.AutoMigrate(&models.Credentials{}); err != nil {
 
-		panic("cte")
+		panic(ERROR_CREDENTIALS_TABLE_CREATION)
 	}
 
 	if err = s.db.AutoMigrate(&models.User{}); err != nil {
 
-		panic("ute")
+		panic(ERROR_USER_TABLE_CREATION)
 	}
 
 	return s.db
