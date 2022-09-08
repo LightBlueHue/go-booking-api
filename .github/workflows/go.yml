@@ -10,7 +10,7 @@ on:
 
 env:
   ## Sets environment variable
-  GO_BOOKING_API_SECRET: E59DD115760893782F7FB8CC6C387DE86FFEC3C186A8EFE24184E9CABDB2EFC3
+  GO_BOOKING_API_SECRET: ${{ secrets.GO_BOOKING_API_SECRET }}
 
 # A workflow run is made up of one or more jobs that can run sequentially or in parallel
 jobs:
