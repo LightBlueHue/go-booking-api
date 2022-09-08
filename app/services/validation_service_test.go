@@ -62,8 +62,8 @@ func Test_ValidateLoginRequest_WhenPasswordInValid_Returns_Error(t *testing.T) {
 	target := services.NewValidationService()
 	requests := []requests.LoginRequest{
 		{Email: faker.Internet().Email(), Password: faker.Internet().Password(0, 0)},
-		{Email: faker.Internet().Email(), Password: faker.Internet().Password(0, 3)},
-		{Email: faker.Internet().FreeEmail(), Password: faker.Internet().Password(20, 30)},
+		{Email: faker.Internet().Email(), Password: faker.Internet().Password(1, 3)},
+		{Email: faker.Internet().FreeEmail(), Password: faker.Internet().Password(21, 30)},
 	}
 
 	for _, request := range requests {

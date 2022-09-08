@@ -29,7 +29,7 @@ func NewValidationService() IValidationService {
 func (s *ValidationService) ValidateLoginRequest(v *revel.Validation, l *requests.LoginRequest) {
 
 	v.Email(l.Email)
-	v.Match(l.Password, regexp.MustCompile("^\\w{4,20}$")).Message(VALIDATION_REQUEST_PASSWORD_LENGTH)
+	v.Match(l.Password, regexp.MustCompile(MATCH_ANY_WORD_CHARACTER_OF_LENGTH_4_TO_20)).Message(VALIDATION_REQUEST_PASSWORD_LENGTH)
 }
 
 // ValidateRegisterRequest validates register request mode.
