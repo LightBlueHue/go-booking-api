@@ -1,6 +1,7 @@
 package services_test
 
 import (
+	"fmt"
 	"go-booking-api/app/services"
 	"os"
 	"testing"
@@ -152,5 +153,6 @@ func Test_GetSecretKey_WhenEnvironmentVariableEmpty_Panics(t *testing.T) {
 
 	// Act
 	// Assert
-	assert.PanicsWithValue(t, services.GO_BOOKING_API_SECRET, func() { services.GetSecretKey() })
+	errorMessage := fmt.Sprintf("%s is empty", services.GO_BOOKING_API_SECRET)
+	assert.PanicsWithValue(t, errorMessage, func() { services.GetSecretKey() })
 }
