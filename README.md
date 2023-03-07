@@ -85,3 +85,7 @@ as host when configuring pgAdmin
 
 ### Create new app:
         revel new -a go-booking-api -r
+
+### Update modules:
+    go get -u
+    go mod tidy
