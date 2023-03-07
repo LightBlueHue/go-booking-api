@@ -97,7 +97,8 @@ func GetSecretKey() string {
 	secret := os.Getenv(GO_BOOKING_API_SECRET)
 	if secret == "" {
 
-		panic(GO_BOOKING_API_SECRET)
+		errorMessage := fmt.Sprintf("%s is empty", GO_BOOKING_API_SECRET)
+		panic(errorMessage)
 	}
 
 	return secret
